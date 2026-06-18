@@ -1,0 +1,24 @@
+# Render Blueprint — deploy the generator as a Docker web service.
+# New + → "Blueprint" → pick this repo, or set it up manually (see README).
+services:
+  - type: web
+    name: white-lp-factory
+    runtime: docker          # older Render accounts use:  env: docker
+    plan: free               # upgrade to "starter" for always-on + a persistent disk
+    dockerfilePath: ./Dockerfile
+    autoDeploy: true
+    envVars:
+      - key: PHP_CLI_SERVER_WORKERS
+        value: "4"
+      # Protect the generator with HTTP Basic Auth (set values in the dashboard).
+      # Leave unset to make it public.
+      - key: LPF_USER
+        sync: false
+      - key: LPF_PASS
+        sync: false
+
+    # ── Optional: keep generated landings between deploys (paid plans only) ──
+    # disk:
+    #   name: output
+    #   mountPath: /var/www/output
+    #   sizeGB: 1

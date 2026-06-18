@@ -1,0 +1,14 @@
+{
+  "name": "white-lp-factory-local-runner",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Run White LP Factory locally with no system PHP (WASM PHP via Node).",
+  "scripts": {
+    "start": "node serve.mjs"
+  },
+  "dependencies": {
+    "@php-wasm/node": "^3.1.39",
+    "@php-wasm/universal": "^3.1.39"
+  }
+}

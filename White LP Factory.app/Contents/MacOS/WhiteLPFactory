@@ -1,0 +1,6 @@
+#!/bin/bash
+# .app launcher → runs the shared launch script (no Terminal window).
+# Quitting the app from the Dock stops the server.
+HERE="$(cd "$(dirname "$0")" && pwd)"          # .../White LP Factory.app/Contents/MacOS
+ROOT="$(cd "$HERE/../../.." && pwd)"           # .../white-lp-factory
+exec /bin/bash "$ROOT/local-runner/launch.sh"
