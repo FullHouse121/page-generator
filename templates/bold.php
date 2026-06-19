@@ -6,8 +6,8 @@ $accent = attr($L['accent']);
 $shots = $L['screenshots'];
 $faq = [
   [$S['get'].' '.$L['name'].'?', $S['cta_sub']],
-  [$S['privacy'].'?', 'Yes — we use industry-standard protection and never sell your data. See our Privacy Policy.'],
-  [$S['rating'].'?', number_format($L['rating'],1).' / 5 from '.$L['rating_count'].' '.$S['reviews'].'.'],
+  [$S['privacy'].'?', $S['b_secure']],
+  [$S['rating'].'?', number_format($L['rating'],1).' / 5 · '.$L['rating_count'].' '.$S['reviews']],
 ];
 ?><!DOCTYPE html>
 <html lang="<?= attr($L['lang']) ?>">
@@ -19,6 +19,7 @@ $faq = [
 <meta property="og:title" content="<?= attr($L['name']) ?>">
 <meta property="og:image" content="<?= attr($L['icon']) ?>">
 <link rel="icon" href="<?= attr($L['icon']) ?>">
+<?php if(!empty($shots[0])): ?><link rel="preload" as="image" href="<?= attr($shots[0]) ?>" fetchpriority="high"><?php endif; ?>
 <style>
 :root{--accent:<?= $accent ?>;--bg:#070710;--surface:#0e0e1c;--card:#13131f;--text:#f3f3fb;--muted:#8b8da6;--line:rgba(255,255,255,.08)}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -47,7 +48,7 @@ nav{height:70px;display:flex;align-items:center;justify-content:space-between;ma
 .lpf-badge small{display:block;font-size:10px;color:#bdbfd6;text-transform:uppercase;letter-spacing:.05em}
 .lpf-badge strong{font-size:16px}
 .heroimg{margin:54px auto 0;max-width:920px;display:flex;gap:18px;justify-content:center;perspective:1200px}
-.heroimg img{width:230px;border-radius:30px;border:1px solid var(--line);box-shadow:0 50px 90px -40px #000}
+.heroimg img{width:230px;aspect-ratio:9/19;object-fit:cover;border-radius:30px;border:1px solid var(--line);box-shadow:0 50px 90px -40px #000}
 .heroimg img:nth-child(2){transform:translateY(-26px) scale(1.04)}
 section{padding:70px 0}
 .shead{text-align:center;max-width:640px;margin:0 auto 44px}
@@ -88,7 +89,7 @@ footer a{margin-left:18px}footer a:hover{color:var(--text)}
     <a class="btn" href="<?= attr($L['cta_url']) ?>"><?= svg_icon('down',18) ?> <?= esc($L['cta_text']) ?></a>
     <?= store_badges($L['cta_url'], $L['lang']) ?>
     <div class="heroimg">
-      <?php for($i=0;$i<min(3,count($shots));$i++): ?><img src="<?= attr($shots[$i]) ?>" alt="<?= attr($L['name']) ?>"><?php endfor; ?>
+      <?php for($i=0;$i<min(3,count($shots));$i++): ?><img src="<?= attr($shots[$i]) ?>" alt="<?= attr($L['name']) ?>" width="230" height="480" <?= $i===0?'loading="eager" fetchpriority="high"':'loading="lazy"' ?> decoding="async"><?php endfor; ?>
     </div>
   </div>
 </header>
@@ -96,9 +97,9 @@ footer a{margin-left:18px}footer a:hover{color:var(--text)}
 <section><div class="wrap">
   <div class="shead"><h2><?= esc($S['why']) ?></h2><p><?= esc($S['join']) ?></p></div>
   <div class="grid">
-    <div class="card"><div class="ic"><?= svg_icon('bolt',24) ?></div><h3><?= esc($S['features']) ?></h3><p>Lightning fast and refined down to the last detail.</p></div>
-    <div class="card"><div class="ic"><?= svg_icon('shield',24) ?></div><h3><?= esc($S['privacy']) ?></h3><p>Private and secure — protected with modern encryption.</p></div>
-    <div class="card"><div class="ic"><?= svg_icon('sparkle',24) ?></div><h3><?= esc($S['what_new']) ?></h3><p>Fresh updates and new features land regularly.</p></div>
+    <div class="card"><div class="ic"><?= svg_icon('bolt',24) ?></div><h3><?= esc($S['features']) ?></h3><p><?= esc($S['b_fast']) ?></p></div>
+    <div class="card"><div class="ic"><?= svg_icon('shield',24) ?></div><h3><?= esc($S['privacy']) ?></h3><p><?= esc($S['b_secure']) ?></p></div>
+    <div class="card"><div class="ic"><?= svg_icon('sparkle',24) ?></div><h3><?= esc($S['what_new']) ?></h3><p><?= esc($S['b_updates']) ?></p></div>
   </div>
 </div></section>
 

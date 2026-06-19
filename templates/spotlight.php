@@ -16,6 +16,7 @@ $shots = $L['screenshots'];
 <meta property="og:image" content="<?= attr($L['icon']) ?>">
 <meta property="og:type" content="website">
 <link rel="icon" href="<?= attr($L['icon']) ?>">
+<?php if(!empty($shots[0])): ?><link rel="preload" as="image" href="<?= attr($shots[0]) ?>" fetchpriority="high"><?php endif; ?>
 <style>
 :root{--accent:<?= $accent ?>;--bg:#0a0b14;--surface:#12131f;--card:#181a29;--text:#eef0f7;--muted:#9aa0b4;--border:rgba(255,255,255,.08)}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -63,7 +64,7 @@ section{padding:64px 0}
 .fcard .ic{width:48px;height:48px;border-radius:13px;display:grid;place-items:center;background:rgba(255,255,255,.06);color:var(--accent);margin-bottom:16px}
 .fcard h3{font-size:18px;margin-bottom:7px}.fcard p{color:var(--muted);font-size:14.5px}
 .gallery{display:flex;gap:16px;overflow-x:auto;padding:6px 2px 16px;scroll-snap-type:x mandatory}
-.gallery img{height:440px;border-radius:22px;border:1px solid var(--border);scroll-snap-align:center;flex:0 0 auto;background:var(--card)}
+.gallery img{height:440px;aspect-ratio:9/19;object-fit:cover;border-radius:22px;border:1px solid var(--border);scroll-snap-align:center;flex:0 0 auto;background:var(--card)}
 .reviews{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;max-width:860px;margin:0 auto}
 .rcard{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px}
 .rcard .top{display:flex;align-items:center;gap:12px;margin-bottom:10px}
@@ -87,8 +88,8 @@ footer a{margin-left:18px}footer a:hover{color:var(--text)}
 <header class="hero"><div class="wrap hero-grid">
   <div>
     <span class="eyebrow"><?= svg_icon('sparkle',15) ?> <?= esc($L['category']) ?></span>
-    <h1><?= esc($L['name']) ?><?php if($L['tagline']): ?> — <?= esc($L['tagline']) ?><?php endif; ?></h1>
-    <p class="lead"><?= esc($L['description'] ?: $S['cta_sub']) ?></p>
+    <h1><?= esc($L['name']) ?></h1>
+    <p class="lead"><?= esc($L['tagline'] ?: $L['description'] ?: $S['cta_sub']) ?></p>
     <div class="cta-row">
       <a class="btn" href="<?= attr($L['cta_url']) ?>"><?= svg_icon('down',18) ?> <?= esc($L['cta_text']) ?></a>
       <a class="btn btn-ghost" href="#features"><?= esc($S['features']) ?></a>
@@ -99,18 +100,14 @@ footer a{margin-left:18px}footer a:hover{color:var(--text)}
       <?php if($L['developer']): ?><div><b><?= esc($L['developer']) ?></b><span><?= esc($S['verified']) ?></span></div><?php endif; ?>
     </div>
   </div>
-  <div class="phone"><img src="<?= attr($shots[0]) ?>" alt="<?= attr($L['name']) ?> screenshot"></div>
+  <div class="phone"><img src="<?= attr($shots[0]) ?>" alt="<?= attr($L['name']) ?>" width="280" height="570" loading="eager" fetchpriority="high" decoding="async"></div>
 </div></header>
 
 <section id="features"><div class="wrap">
   <div class="shead"><h2><?= esc($S['why']) ?></h2><p><?= esc($L['tagline'] ?: $S['join']) ?></p></div>
   <div class="feat">
-    <?php
-    $cards = [['bolt',$S['features'],$L['description'] ?: 'Fast, smooth and built to feel effortless from the first tap.'],
-              ['shield',$S['verified'],'Your data stays private and secure with industry-standard protection.'],
-              ['heart',$S['why'],'Thoughtful design and constant updates that users genuinely love.']];
-    foreach($cards as $c): ?>
-    <div class="fcard"><div class="ic"><?= svg_icon($c[0],24) ?></div><h3><?= esc($c[1]) ?></h3><p><?= esc(mb_substr($c[2],0,140)) ?></p></div>
+    <?php foreach(feature_points($S) as $c): ?>
+    <div class="fcard"><div class="ic"><?= svg_icon($c[0],24) ?></div><h3><?= esc($c[1]) ?></h3><p><?= esc($c[2]) ?></p></div>
     <?php endforeach; ?>
   </div>
 </div></section>
@@ -118,7 +115,7 @@ footer a{margin-left:18px}footer a:hover{color:var(--text)}
 <section style="background:var(--surface)"><div class="wrap">
   <div class="shead"><h2><?= esc($S['screens']) ?></h2></div>
   <div class="gallery">
-    <?php foreach($shots as $s): ?><img src="<?= attr($s) ?>" alt="<?= attr($L['name']) ?>"><?php endforeach; ?>
+    <?php foreach($shots as $s): ?><img src="<?= attr($s) ?>" alt="<?= attr($L['name']) ?>" loading="lazy" decoding="async"><?php endforeach; ?>
   </div>
 </div></section>
 

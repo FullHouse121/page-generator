@@ -118,6 +118,7 @@ if ($action === 'generate'):
         'cta_url'=>v('cta_url','#download'),'cta_text'=>v('cta_text'),'template'=>v('template','spotlight'),
         'lang'=>v('lang','en'),'accent'=>v('accent'),'kclient'=>!empty($_POST['kclient']),
         'format'=>v('format','php'),'localize'=>!empty($_POST['localize']),
+        'tracker_url'=>v('tracker_url'),'tracker_token'=>v('tracker_token'),
     ];
     $res = build_landing($form);
     $tname = $reg[$form['template']]['name'] ?? $form['template'];
@@ -236,8 +237,12 @@ elseif ($action === 'fetch'):
       </label>
     </div>
     <div class="opts">
-      <label class="opt"><input type="checkbox" name="kclient" value="1"><div><b>Add Keitaro Kclient.php</b><small>Includes the preloading hook at the top of the page (forces .php).</small></div></label>
+      <label class="opt"><input type="checkbox" name="kclient" value="1"><div><b>Add Keitaro Kclient (fail-open)</b><small>Prepends a fail-open preloading hook (forces .php). Fill the tracker URL + token below for a ready-to-run snippet.</small></div></label>
       <label class="opt"><input type="checkbox" name="localize" value="1" checked><div><b>Download images locally</b><small>Saves icon + screenshots into /assets so the page is self-contained.</small></div></label>
+    </div>
+    <div class="row" style="margin-top:14px">
+      <label class="f"><span>Keitaro tracker URL <span class="muted">(only used if Kclient is on)</span></span><input type="text" name="tracker_url" value="" placeholder="https://go.yourtracker.com/"></label>
+      <label class="f"><span>Campaign token <span class="muted">(only used if Kclient is on)</span></span><input type="text" name="tracker_token" value="" placeholder="xxxxxxxxxxxxxxxx"></label>
     </div>
   </div>
 

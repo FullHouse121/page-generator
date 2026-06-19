@@ -5,11 +5,9 @@ $S = $L['S'];
 $accent = attr($L['accent']);
 $shots = $L['screenshots'];
 // build up to 3 alternating feature blocks from screenshots
-$blockCopy = [
-  [$S['features'], $L['tagline'] ?: 'Designed to feel effortless. Everything you need, one tap away.'],
-  [$S['why'],      'Smart, fast and reliable — built around how you actually use your phone.'],
-  [$S['reviews'],  'Loved by '.$L['rating_count'].' people who rate it '.number_format($L['rating'],1).' out of 5.'],
-];
+// each: [icon, title, body] — localized
+$blockCopy = feature_points($S);
+if ($L['tagline']) { $blockCopy[0][2] = $L['tagline']; }
 ?><!DOCTYPE html>
 <html lang="<?= attr($L['lang']) ?>">
 <head>
@@ -20,6 +18,7 @@ $blockCopy = [
 <meta property="og:title" content="<?= attr($L['name']) ?>">
 <meta property="og:image" content="<?= attr($L['icon']) ?>">
 <link rel="icon" href="<?= attr($L['icon']) ?>">
+<?php if(!empty($shots[0])): ?><link rel="preload" as="image" href="<?= attr($shots[0]) ?>" fetchpriority="high"><?php endif; ?>
 <style>
 :root{--accent:<?= $accent ?>;--bg:#0f1117;--surface:#161925;--text:#eceefb;--muted:#9499ad;--line:rgba(255,255,255,.09)}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -48,7 +47,7 @@ nav{height:64px;display:flex;align-items:center;justify-content:space-between;ma
 .checks li{display:flex;gap:10px;align-items:flex-start;color:var(--text);font-size:15px}
 .checks .c{color:var(--accent);flex:0 0 auto}
 .imgwrap{display:flex;justify-content:center}
-.imgwrap img{width:260px;border-radius:26px;border:1px solid var(--line);box-shadow:0 40px 70px -34px #000}
+.imgwrap img{width:260px;aspect-ratio:9/19;object-fit:cover;border-radius:26px;border:1px solid var(--line);box-shadow:0 40px 70px -34px #000}
 .tcards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:24px 0 0}
 .tcard{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px}
 .tcard p{color:var(--muted);font-size:14.5px;margin-top:10px}
@@ -73,8 +72,8 @@ footer a{margin-left:18px}footer a:hover{color:var(--text)}
 
 <header class="hero"><div class="wrap">
   <span class="pill"><?= esc($L['category']) ?></span>
-  <h1><?= esc($L['name']) ?><?php if($L['tagline']): ?>. <?= esc($L['tagline']) ?><?php endif; ?></h1>
-  <p><?= esc($L['description'] ?: $S['cta_sub']) ?></p>
+  <h1><?= esc($L['name']) ?></h1>
+  <p><?= esc($L['tagline'] ?: $L['description'] ?: $S['cta_sub']) ?></p>
   <a class="btn" href="<?= attr($L['cta_url']) ?>"><?= svg_icon('down',18) ?> <?= esc($L['cta_text']) ?></a>
   <div class="stats">
     <div class="stat"><b><?= esc(number_format($L['rating'],1)) ?>★</b><span><?= esc($S['rating']) ?></span></div>
@@ -84,19 +83,19 @@ footer a{margin-left:18px}footer a:hover{color:var(--text)}
 </div></header>
 
 <div class="wrap">
-  <?php $icons=['bolt','shield','heart']; foreach($blockCopy as $i=>$b): $img=$shots[$i%count($shots)]; ?>
+  <?php foreach($blockCopy as $i=>$b): $img=$shots[$i%count($shots)]; ?>
   <section class="block">
     <div class="txt">
-      <div class="ic"><?= svg_icon($icons[$i%3],24) ?></div>
-      <h2><?= esc($b[0]) ?></h2>
-      <p><?= esc($b[1]) ?></p>
+      <div class="ic"><?= svg_icon($b[0],24) ?></div>
+      <h2><?= esc($b[1]) ?></h2>
+      <p><?= esc($b[2]) ?></p>
       <ul class="checks">
-        <li><span class="c"><?= svg_icon('check',18) ?></span> <?= esc($S['features']) ?> — fast and reliable.</li>
-        <li><span class="c"><?= svg_icon('check',18) ?></span> <?= esc($S['privacy']) ?> — secure by default.</li>
-        <li><span class="c"><?= svg_icon('check',18) ?></span> <?= esc($S['updated']) ?> <?= esc($L['year']) ?>.</li>
+        <li><span class="c"><?= svg_icon('check',18) ?></span> <?= esc($S['features']) ?></li>
+        <li><span class="c"><?= svg_icon('check',18) ?></span> <?= esc($S['privacy']) ?></li>
+        <li><span class="c"><?= svg_icon('check',18) ?></span> <?= esc($S['updated']) ?> <?= esc($L['year']) ?></li>
       </ul>
     </div>
-    <div class="imgwrap"><img src="<?= attr($img) ?>" alt="<?= attr($L['name']) ?>"></div>
+    <div class="imgwrap"><img src="<?= attr($img) ?>" alt="<?= attr($L['name']) ?>" width="260" height="540" <?= $i===0?'loading="eager" fetchpriority="high"':'loading="lazy"' ?> decoding="async"></div>
   </section>
   <?php endforeach; ?>
 

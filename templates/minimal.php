@@ -15,6 +15,7 @@ $shots = $L['screenshots'];
 <meta property="og:description" content="<?= attr($L['tagline'] ?: $L['description']) ?>">
 <meta property="og:image" content="<?= attr($L['icon']) ?>">
 <link rel="icon" href="<?= attr($L['icon']) ?>">
+<link rel="preload" as="image" href="<?= attr($L['icon']) ?>" fetchpriority="high">
 <style>
 :root{--accent:<?= $accent ?>;--text:#0c0d10;--muted:#6b7280;--line:#e8eaef;--soft:#f6f7f9}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -37,7 +38,7 @@ h1{font-size:clamp(36px,6vw,60px);letter-spacing:-.03em;line-height:1.04;font-we
 .meta div:last-child{border-right:0}
 .meta b{display:block;font-size:18px}.meta span{font-size:12.5px;color:var(--muted)}
 .shots{display:flex;gap:18px;justify-content:center;padding:60px 0 20px;overflow-x:auto}
-.shots img{height:480px;border-radius:30px;border:1px solid var(--line);box-shadow:0 30px 60px -34px rgba(0,0,0,.4);flex:0 0 auto}
+.shots img{height:480px;aspect-ratio:9/19;object-fit:cover;border-radius:30px;border:1px solid var(--line);box-shadow:0 30px 60px -34px rgba(0,0,0,.4);flex:0 0 auto}
 .section{padding:70px 0;border-top:1px solid var(--line)}
 .section h2{font-size:clamp(26px,3.4vw,34px);letter-spacing:-.02em;text-align:center;margin-bottom:14px}
 .section p.lead{text-align:center;color:var(--muted);max-width:620px;margin:0 auto;font-size:17px}
@@ -62,7 +63,7 @@ footer a{margin:0 10px;color:var(--muted)}footer a:hover{color:var(--text)}
 </nav>
 
 <header class="hero"><div class="wrap">
-  <img class="icon-xl" src="<?= attr($L['icon']) ?>" alt="<?= attr($L['name']) ?>">
+  <img class="icon-xl" src="<?= attr($L['icon']) ?>" alt="<?= attr($L['name']) ?>" width="104" height="104" loading="eager" fetchpriority="high" decoding="async">
   <h1><?= esc($L['name']) ?></h1>
   <p class="sub"><?= esc($L['tagline'] ?: $L['description'] ?: $S['cta_sub']) ?></p>
   <a class="btn" href="<?= attr($L['cta_url']) ?>"><?= svg_icon('down',18) ?> <?= esc($L['cta_text']) ?></a>
@@ -74,16 +75,16 @@ footer a{margin:0 10px;color:var(--muted)}footer a:hover{color:var(--text)}
 </div></header>
 
 <div class="wrap"><div class="shots">
-  <?php foreach($shots as $s): ?><img src="<?= attr($s) ?>" alt="<?= attr($L['name']) ?>"><?php endforeach; ?>
+  <?php foreach($shots as $s): ?><img src="<?= attr($s) ?>" alt="<?= attr($L['name']) ?>" loading="lazy" decoding="async"><?php endforeach; ?>
 </div></div>
 
 <section class="section"><div class="wrap">
   <h2><?= esc($S['why']) ?></h2>
   <p class="lead"><?= esc($L['description'] ?: $S['join']) ?></p>
   <div class="points">
-    <div class="point"><div class="ic"><?= svg_icon('bolt',24) ?></div><h3><?= esc($S['features']) ?></h3><p>Effortless, fast and a joy to use every day.</p></div>
-    <div class="point"><div class="ic"><?= svg_icon('lock',22) ?></div><h3><?= esc($S['privacy']) ?></h3><p>Private by design — your data stays yours.</p></div>
-    <div class="point"><div class="ic"><?= svg_icon('heart',22) ?></div><h3><?= esc($S['reviews']) ?></h3><p><?= esc($L['rating_count']) ?> people rate it <?= esc(number_format($L['rating'],1)) ?>★.</p></div>
+    <div class="point"><div class="ic"><?= svg_icon('bolt',24) ?></div><h3><?= esc($S['features']) ?></h3><p><?= esc($S['b_daily']) ?></p></div>
+    <div class="point"><div class="ic"><?= svg_icon('lock',22) ?></div><h3><?= esc($S['privacy']) ?></h3><p><?= esc($S['b_secure']) ?></p></div>
+    <div class="point"><div class="ic"><?= svg_icon('heart',22) ?></div><h3><?= esc($S['reviews']) ?></h3><p><?= esc($S['b_loved']) ?></p></div>
   </div>
 </div></section>
 

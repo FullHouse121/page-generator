@@ -32,10 +32,13 @@ function detect_store(string $url): string {
     return 'generic';
 }
 
-/** Clean store suffixes from a title. */
+/** Clean store suffixes from a title (EN/ES/PT). */
 function clean_name(string $name): string {
-    $name = preg_replace('/\s*[-–—|]\s*(Apps on Google Play|Google Play|App Store|on the App Store).*/iu', '', $name);
-    $name = preg_replace('/\s+on the App Store$/iu', '', $name);
+    // e.g. "App - Aplicaciones en Google Play", "App - Apps on Google Play",
+    //      "App – Apps no Google Play", "App on the App Store", "App - App Store"
+    $name = preg_replace('/\s*[-–—|:]\s*[^-–—|:]*\b(Google Play|App Store)\b.*$/iu', '', $name);
+    $name = preg_replace('/\s+(on|en|no|na)\s+(the\s+)?App Store.*$/iu', '', $name);
+    $name = preg_replace('/\s*[-–—|]\s*$/u', '', $name); // dangling separator
     return trim($name);
 }
 

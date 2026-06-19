@@ -15,6 +15,7 @@ $rc = (int)preg_replace('/\D/','',$L['rating_count']) ?: 12480;
 <meta property="og:title" content="<?= attr($L['name']) ?>">
 <meta property="og:image" content="<?= attr($L['icon']) ?>">
 <link rel="icon" href="<?= attr($L['icon']) ?>">
+<link rel="preload" as="image" href="<?= attr($L['icon']) ?>" fetchpriority="high">
 <style>
 :root{--accent:<?= $accent ?>;--bg:#fff;--soft:#f1f3f6;--text:#1c1f26;--muted:#6a7280;--line:#e6e9ef}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -43,7 +44,7 @@ a{color:inherit;text-decoration:none}
 .section{padding:26px 0;border-top:1px solid var(--line)}
 .section h2{font-size:20px;font-weight:500;margin-bottom:16px}
 .shots{display:flex;gap:14px;overflow-x:auto;padding-bottom:8px}
-.shots img{height:340px;border-radius:14px;border:1px solid var(--line);flex:0 0 auto}
+.shots img{height:340px;aspect-ratio:9/19;object-fit:cover;border-radius:14px;border:1px solid var(--line);flex:0 0 auto}
 .about{color:#39414f;font-size:15px;max-width:760px;white-space:pre-line}
 .tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
 .tag{background:var(--soft);border-radius:999px;padding:6px 14px;font-size:13px;color:var(--muted)}
@@ -72,7 +73,7 @@ footer a{margin-left:16px}footer a:hover{color:var(--text)}
 
 <div class="wrap">
   <div class="appcard">
-    <img class="icon" src="<?= attr($L['icon']) ?>" alt="<?= attr($L['name']) ?>">
+    <img class="icon" src="<?= attr($L['icon']) ?>" alt="<?= attr($L['name']) ?>" width="108" height="108" loading="eager" fetchpriority="high" decoding="async">
     <div style="flex:1">
       <h1><?= esc($L['name']) ?></h1>
       <?php if($L['developer']): ?><div class="dev"><?= esc($L['developer']) ?></div><?php endif; ?>
@@ -90,7 +91,7 @@ footer a{margin-left:16px}footer a:hover{color:var(--text)}
 
   <div class="section">
     <div class="shots">
-      <?php foreach($shots as $s): ?><img src="<?= attr($s) ?>" alt="<?= attr($L['name']) ?>"><?php endforeach; ?>
+      <?php foreach($shots as $s): ?><img src="<?= attr($s) ?>" alt="<?= attr($L['name']) ?>" loading="lazy" decoding="async"><?php endforeach; ?>
     </div>
   </div>
 

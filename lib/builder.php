@@ -123,14 +123,16 @@ function build_landing(array $form): array {
     // --- Prepend Kclient include for the preloading method ---
     $indexName = 'index.' . $format;
     if ($kclient) {
-        $php = "<?php\n"
-             . "/* Keitaro integration — preloading method.\n"
-             . "   Replace kclient.php with the file Keitaro generates for your campaign.\n"
-             . "   The white page below is served; Kclient decides what the visitor gets. */\n"
-             . "if (file_exists(__DIR__ . '/kclient.php')) { include __DIR__ . '/kclient.php'; }\n"
-             . "?>\n";
+        $turl = trim($form['tracker_url'] ?? '');
+        $ttok = trim($form['tracker_token'] ?? '');
+        if ($turl !== '' && $ttok !== '') {
+            $php = kclient_snippet($turl, $ttok);   // full fail-open integration
+        } else {
+            $php = kclient_include_wrapper();        // fail-open include; user pastes snippet
+            $warnings[] = 'Kclient enabled without tracker URL + token — added a fail-open include of kclient.php. Paste your KClient snippet there, or regenerate with the tracker URL/token filled in.';
+        }
         $html = $php . $html;
-        // drop a harmless placeholder so the page renders before Keitaro's file is added
+        // drop a harmless placeholder so the page renders before Keitaro's library is added
         file_put_contents($dir . '/kclient.php', kclient_placeholder());
     }
 
@@ -138,6 +140,7 @@ function build_landing(array $form): array {
     file_put_contents($dir . '/privacy.html', legal_page('privacy', $L));
     file_put_contents($dir . '/terms.html',   legal_page('terms', $L));
     file_put_contents($dir . '/robots.txt',   "User-agent: *\nAllow: /\n");
+    file_put_contents($dir . '/.htaccess',     htaccess_perf());
 
     // --- Zip it up ---
     $zip = OUTPUT_DIR . '/' . $slug . '.zip';
@@ -152,16 +155,97 @@ function build_landing(array $form): array {
 
 /* ------------------------------------------------------------------ */
 
+/** Apache .htaccess: gzip + browser caching for faster loads (no-cache the PHP page). */
+function htaccess_perf(): string {
+    return <<<HT
+# White LP Factory — performance
+DirectoryIndex index.php index.html
+
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/css application/javascript application/json image/svg+xml application/xml
+</IfModule>
+
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType image/jpeg    "access plus 30 days"
+  ExpiresByType image/png     "access plus 30 days"
+  ExpiresByType image/webp    "access plus 30 days"
+  ExpiresByType image/gif     "access plus 30 days"
+  ExpiresByType image/svg+xml "access plus 30 days"
+  ExpiresByType image/x-icon  "access plus 30 days"
+  ExpiresByType text/css      "access plus 7 days"
+</IfModule>
+
+<IfModule mod_headers.c>
+  <FilesMatch "\\.(jpg|jpeg|png|webp|gif|svg|ico)\$">
+    Header set Cache-Control "public, max-age=2592000, immutable"
+  </FilesMatch>
+  <FilesMatch "\\.php\$">
+    Header set Cache-Control "no-store, no-cache, must-revalidate"
+  </FilesMatch>
+</IfModule>
+HT;
+}
+
+/**
+ * Full fail-open Keitaro snippet, prepended to index.php.
+ * kclient.php (next to it) must be Keitaro's KClient LIBRARY (the class file).
+ * Real visitors are routed when the tracker is healthy; if it's slow/down/erroring,
+ * the error is swallowed and the white page renders.
+ */
+function kclient_snippet(string $url, string $token): string {
+    $u = addslashes($url);
+    $t = addslashes($token);
+    return <<<PHP
+<?php
+/* Keitaro cloaking (preloading) — FAIL-OPEN.
+   kclient.php (same folder) must be Keitaro's KClient LIBRARY (the class file).
+   Tip: for faster failure, lower CURLOPT_TIMEOUT in kclient.php (e.g. 10 -> 4). */
+if (file_exists(__DIR__ . '/kclient.php')) {
+    require_once __DIR__ . '/kclient.php';
+    try {
+        ob_start();
+        \$client = new KClient('$u', '$t');
+        \$client->sendAllParams();
+        \$client->forceRedirectOffer();
+        \$client->executeAndBreak();          // redirects + exits real visitors; returns otherwise
+        if (ob_get_level() > 0) { ob_end_clean(); }   // no redirect -> show white page
+    } catch (\\Throwable \$e) {
+        if (ob_get_level() > 0) { ob_end_clean(); }   // tracker error/timeout -> show white page
+    }
+}
+?>
+
+PHP;
+}
+
+/** Fail-open include used when no tracker URL/token was provided. */
+function kclient_include_wrapper(): string {
+    return <<<'PHP'
+<?php
+/* Keitaro preloading — FAIL-OPEN include.
+   Put your KClient integration snippet (new KClient(...) ... executeAndBreak()) in
+   kclient.php. If it errors or times out, the white page below still renders. */
+if (file_exists(__DIR__ . '/kclient.php')) {
+    try { ob_start(); include __DIR__ . '/kclient.php'; if (ob_get_level() > 0) { ob_end_clean(); } }
+    catch (\Throwable $e) { if (ob_get_level() > 0) { ob_end_clean(); } }
+}
+?>
+
+PHP;
+}
+
 function kclient_placeholder(): string {
     return "<?php\n"
         . "/**\n"
-        . " * kclient.php — PLACEHOLDER.\n"
+        . " * kclient.php — PLACEHOLDER (no-op so the white page renders before you wire Keitaro).\n"
         . " *\n"
-        . " * Replace this file with the Kclient.php that Keitaro generates:\n"
-        . " *   Keitaro -> Campaign -> ... -> Integration -> PHP/Kclient (local).\n"
-        . " * Keep the filename `kclient.php` so index.php picks it up automatically.\n"
+        . " * If you generated WITH a tracker URL + token: replace this with Keitaro's KClient\n"
+        . " *   LIBRARY (the big class file) — index.php already contains the fail-open snippet.\n"
+        . " * If you generated WITHOUT them: put your KClient snippet here\n"
+        . " *   (new KClient('https://tracker/', 'TOKEN'); ...; \$client->executeAndBreak();).\n"
         . " *\n"
-        . " * Until you do, this no-op lets the white page render normally.\n"
+        . " * Keitaro: Campaign -> ... -> Integration -> PHP / local. Keep the filename kclient.php.\n"
         . " */\n";
 }
 

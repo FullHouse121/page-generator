@@ -105,6 +105,11 @@ function lpf_strings(string $lang): array {
             'why' => 'Why people love it', 'join' => 'Join millions of happy users',
             'cta_sub' => 'Free to download. Available for iOS and Android.',
             'recent' => 'Recent', 'verified' => 'Verified user',
+            'b_fast' => 'Fast, smooth and built to feel effortless from the first tap.',
+            'b_secure' => 'Your data stays private and secure with industry-standard protection.',
+            'b_loved' => 'Thoughtful design and constant updates that people genuinely love.',
+            'b_updates' => 'Fresh updates and new features land regularly.',
+            'b_daily' => 'Effortless, fast and a joy to use every day.',
         ],
         'es' => [
             'get' => 'Descargar App', 'download' => 'Descargar Gratis', 'install' => 'Instalar',
@@ -116,6 +121,11 @@ function lpf_strings(string $lang): array {
             'why' => 'Por qué les encanta', 'join' => 'Únete a millones de usuarios',
             'cta_sub' => 'Descarga gratis. Disponible para iOS y Android.',
             'recent' => 'Reciente', 'verified' => 'Usuario verificado',
+            'b_fast' => 'Rápida, fluida y pensada para sentirse natural desde el primer toque.',
+            'b_secure' => 'Tus datos se mantienen privados y seguros con protección estándar del sector.',
+            'b_loved' => 'Diseño cuidado y actualizaciones constantes que de verdad encantan.',
+            'b_updates' => 'Actualizaciones y nuevas funciones llegan con frecuencia.',
+            'b_daily' => 'Sencilla, rápida y un placer de usar cada día.',
         ],
         'pt' => [
             'get' => 'Baixar App', 'download' => 'Baixar Grátis', 'install' => 'Instalar',
@@ -127,9 +137,23 @@ function lpf_strings(string $lang): array {
             'why' => 'Por que adoram', 'join' => 'Junte-se a milhões de usuários',
             'cta_sub' => 'Download grátis. Disponível para iOS e Android.',
             'recent' => 'Recente', 'verified' => 'Usuário verificado',
+            'b_fast' => 'Rápido, fluido e feito para parecer natural desde o primeiro toque.',
+            'b_secure' => 'Seus dados ficam privados e seguros com proteção padrão do setor.',
+            'b_loved' => 'Design caprichado e atualizações constantes que as pessoas adoram.',
+            'b_updates' => 'Atualizações e novos recursos chegam com frequência.',
+            'b_daily' => 'Simples, rápido e um prazer de usar todos os dias.',
         ],
     ];
     return $dict[$lang] ?? $dict['en'];
+}
+
+/** Three localized [icon, title, body] feature cards shared by the templates. */
+function feature_points(array $S): array {
+    return [
+        ['bolt',    $S['features'], $S['b_fast']],
+        ['shield',  $S['privacy'],  $S['b_secure']],
+        ['heart',   $S['why'],      $S['b_loved']],
+    ];
 }
 
 /** Synthetic-but-plausible review snippets when a store gives none. */
