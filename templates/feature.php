@@ -26,17 +26,23 @@ html{scroll-behavior:smooth}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;padding-bottom:74px}
 .wrap{max-width:1060px;margin:0 auto;padding:0 22px}
 a{color:inherit;text-decoration:none}
-.btn{display:inline-flex;align-items:center;gap:9px;background:var(--accent);color:#fff;font-weight:700;padding:14px 30px;border-radius:14px;font-size:15px;transition:transform .15s}
+.btn{position:relative;overflow:hidden;isolation:isolate;display:inline-flex;align-items:center;gap:9px;background:var(--accent);color:#fff;font-weight:700;padding:14px 30px;border-radius:14px;font-size:15px;transition:transform .15s}
 .btn:hover{transform:translateY(-2px)}
+.btn::after{content:"";position:absolute;top:0;left:-60%;width:45%;height:100%;background:linear-gradient(120deg,transparent,rgba(255,255,255,.3),transparent);transform:skewX(-20deg);transition:left .5s ease}
+.btn:hover::after{left:130%}
 nav{height:64px;display:flex;align-items:center;justify-content:space-between;max-width:1060px;margin:0 auto;padding:0 22px}
 .logo{display:flex;gap:11px;align-items:center;font-weight:800;font-size:18px}
 .logo img{width:32px;height:32px;border-radius:9px}
-.hero{text-align:center;padding:56px 0 40px}
+.hero{position:relative;text-align:center;padding:56px 0 40px;overflow:hidden}
+.hero::before{content:"";position:absolute;top:-220px;left:50%;transform:translateX(-50%);width:820px;height:560px;
+  background:radial-gradient(closest-side,var(--accent),transparent);opacity:.16;filter:blur(20px);z-index:-1}
 .pill{display:inline-block;background:var(--surface);border:1px solid var(--line);color:var(--accent);font-weight:700;font-size:12.5px;padding:7px 15px;border-radius:999px;letter-spacing:.05em;text-transform:uppercase}
 .hero h1{font-size:clamp(34px,5.4vw,56px);letter-spacing:-.02em;line-height:1.05;margin:18px auto 16px;max-width:760px;font-weight:800}
 .hero p{color:var(--muted);font-size:19px;max-width:560px;margin:0 auto 26px}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:680px;margin:46px auto 0}
-.stat{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px 10px;text-align:center}
+.stat{background:linear-gradient(180deg,rgba(255,255,255,.04),transparent 45%),var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px 10px;text-align:center;
+  box-shadow:0 14px 28px -20px rgba(0,0,0,.5);transition:transform .2s ease}
+.stat:hover{transform:translateY(-3px)}
 .stat b{font-size:26px;display:block}.stat span{color:var(--muted);font-size:13px}
 .block{display:grid;grid-template-columns:1fr 1fr;gap:46px;align-items:center;padding:60px 0;border-top:1px solid var(--line)}
 .block:nth-child(even) .txt{order:2}
@@ -47,9 +53,12 @@ nav{height:64px;display:flex;align-items:center;justify-content:space-between;ma
 .checks li{display:flex;gap:10px;align-items:flex-start;color:var(--text);font-size:15px}
 .checks .c{color:var(--accent);flex:0 0 auto}
 .imgwrap{display:flex;justify-content:center}
-.imgwrap img{width:260px;aspect-ratio:9/19;object-fit:cover;border-radius:26px;border:1px solid var(--line);box-shadow:0 40px 70px -34px #000}
+.imgwrap img{width:260px;aspect-ratio:9/19;object-fit:cover;border-radius:26px;border:1px solid var(--line);box-shadow:0 40px 70px -34px #000;transition:transform .25s ease}
+.imgwrap img:hover{transform:translateY(-4px)}
 .tcards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:24px 0 0}
-.tcard{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px}
+.tcard{background:linear-gradient(180deg,rgba(255,255,255,.04),transparent 45%),var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px;
+  box-shadow:0 14px 28px -20px rgba(0,0,0,.5);transition:transform .2s ease}
+.tcard:hover{transform:translateY(-3px)}
 .tcard p{color:var(--muted);font-size:14.5px;margin-top:10px}
 .tcard .who{display:flex;align-items:center;gap:10px;margin-top:14px;font-size:14px}
 .av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#2a2d3a);display:grid;place-items:center;font-weight:800;font-size:14px}
@@ -84,7 +93,7 @@ footer a{margin-left:18px}footer a:hover{color:var(--text)}
 
 <div class="wrap">
   <?php foreach($blockCopy as $i=>$b): $img=$shots[$i%count($shots)]; ?>
-  <section class="block">
+  <section class="block reveal">
     <div class="txt">
       <div class="ic"><?= svg_icon($b[0],24) ?></div>
       <h2><?= esc($b[1]) ?></h2>
@@ -100,7 +109,7 @@ footer a{margin-left:18px}footer a:hover{color:var(--text)}
   <?php endforeach; ?>
 
   <?php if(!empty($L['reviews'])): ?>
-  <section style="padding:56px 0;border-top:1px solid var(--line)">
+  <section class="reveal" style="padding:56px 0;border-top:1px solid var(--line)">
     <h2 style="font-size:clamp(24px,3vw,32px);letter-spacing:-.02em;margin-bottom:6px"><?= esc($S['reviews']) ?></h2>
     <div class="tcards">
       <?php foreach(array_slice($L['reviews'],0,3) as $r): ?>
@@ -122,5 +131,6 @@ footer a{margin-left:18px}footer a:hover{color:var(--text)}
   <div class="l"><img src="<?= attr($L['icon']) ?>" alt=""><div><b><?= esc($L['name']) ?></b><span><?= esc(number_format($L['rating'],1)) ?>★ · <?= esc($L['category']) ?></span></div></div>
   <a class="btn" href="<?= attr($L['cta_url']) ?>"><?= esc($L['cta_text']) ?></a>
 </div></div>
+<?= reveal_script() ?>
 </body>
 </html>

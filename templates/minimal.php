@@ -38,13 +38,15 @@ h1{font-size:clamp(36px,6vw,60px);letter-spacing:-.03em;line-height:1.04;font-we
 .meta div:last-child{border-right:0}
 .meta b{display:block;font-size:18px}.meta span{font-size:12.5px;color:var(--muted)}
 .shots{display:flex;gap:18px;justify-content:center;padding:60px 0 20px;overflow-x:auto}
-.shots img{height:480px;aspect-ratio:9/19;object-fit:cover;border-radius:30px;border:1px solid var(--line);box-shadow:0 30px 60px -34px rgba(0,0,0,.4);flex:0 0 auto}
+.shots img{height:480px;aspect-ratio:9/19;object-fit:cover;border-radius:30px;border:1px solid var(--line);box-shadow:0 30px 60px -34px rgba(0,0,0,.4);flex:0 0 auto;transition:transform .25s ease}
+.shots img:hover{transform:translateY(-4px)}
 .section{padding:70px 0;border-top:1px solid var(--line)}
 .section h2{font-size:clamp(26px,3.4vw,34px);letter-spacing:-.02em;text-align:center;margin-bottom:14px}
 .section p.lead{text-align:center;color:var(--muted);max-width:620px;margin:0 auto;font-size:17px}
 .points{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;margin-top:46px}
 .point{text-align:center}
-.point .ic{width:54px;height:54px;border-radius:50%;background:var(--soft);color:var(--accent);display:grid;place-items:center;margin:0 auto 14px}
+.point .ic{width:54px;height:54px;border-radius:50%;background:var(--soft);color:var(--accent);display:grid;place-items:center;margin:0 auto 14px;transition:transform .2s ease,background .2s ease}
+.point:hover .ic{transform:scale(1.08);background:#eef0f4}
 .point h3{font-size:17px;margin-bottom:6px}.point p{color:var(--muted);font-size:14.5px}
 .quote{max-width:680px;margin:0 auto;text-align:center}
 .quote p{font-size:clamp(20px,2.6vw,26px);letter-spacing:-.01em;line-height:1.4;margin-bottom:18px}
@@ -74,11 +76,11 @@ footer a{margin:0 10px;color:var(--muted)}footer a:hover{color:var(--text)}
   </div>
 </div></header>
 
-<div class="wrap"><div class="shots">
+<div class="wrap reveal"><div class="shots">
   <?php foreach($shots as $s): ?><img src="<?= attr($s) ?>" alt="<?= attr($L['name']) ?>" loading="lazy" decoding="async"><?php endforeach; ?>
 </div></div>
 
-<section class="section"><div class="wrap">
+<section class="section reveal"><div class="wrap">
   <h2><?= esc($S['why']) ?></h2>
   <p class="lead"><?= esc($L['description'] ?: $S['join']) ?></p>
   <div class="points">
@@ -89,13 +91,13 @@ footer a{margin:0 10px;color:var(--muted)}footer a:hover{color:var(--text)}
 </div></section>
 
 <?php if(!empty($L['reviews'])): $q = $L['reviews'][1] ?? $L['reviews'][0]; ?>
-<section class="section"><div class="wrap quote">
+<section class="section reveal"><div class="wrap quote">
   <p>“<?= esc($q[2]) ?>”</p>
   <div class="who"><?= stars_svg($q[1],$accent,15) ?> &nbsp;<?= esc($q[0]) ?> · <?= esc($S['verified']) ?></div>
 </div></section>
 <?php endif; ?>
 
-<section class="cta"><div class="wrap">
+<section class="cta reveal"><div class="wrap">
   <h2><?= esc($S['get']) ?> <?= esc($L['name']) ?></h2>
   <a class="btn" href="<?= attr($L['cta_url']) ?>"><?= svg_icon('down',18) ?> <?= esc($L['cta_text']) ?></a>
 </div></section>
@@ -106,5 +108,6 @@ footer a{margin:0 10px;color:var(--muted)}footer a:hover{color:var(--text)}
   <a href="<?= attr($L['privacy_url']) ?>"><?= esc($S['privacy']) ?></a> ·
   <a href="<?= attr($L['terms_url']) ?>"><?= esc($S['terms']) ?></a>
 </footer>
+<?= reveal_script() ?>
 </body>
 </html>

@@ -38,9 +38,11 @@ h1{font-size:clamp(44px,8vw,84px);line-height:.98;letter-spacing:-.035em;font-we
 .meta-row div b{font-size:26px;font-weight:800;letter-spacing:-.02em;display:block}
 .meta-row div span{color:var(--muted);font-size:13px}
 .showcase{margin:70px 0;display:flex;gap:22px;overflow-x:auto;padding-bottom:10px;scroll-snap-type:x mandatory}
-.showcase img{height:560px;aspect-ratio:9/19;object-fit:cover;border-radius:20px;border:1px solid var(--line);box-shadow:0 40px 70px -44px rgba(0,0,0,.4);flex:0 0 auto;scroll-snap-align:center}
+.showcase img{height:560px;aspect-ratio:9/19;object-fit:cover;border-radius:20px;border:1px solid var(--line);box-shadow:0 40px 70px -44px rgba(0,0,0,.4);flex:0 0 auto;scroll-snap-align:center;transition:transform .25s ease}
+.showcase img:hover{transform:translateY(-4px)}
 .feat{display:grid;grid-template-columns:repeat(3,1fr);gap:40px;padding:70px 0;border-top:1px solid var(--line)}
-.feat .ic{color:var(--accent);margin-bottom:16px}
+.feat .ic{color:var(--accent);margin-bottom:16px;transition:transform .2s ease}
+.feat>div:hover .ic{transform:translateY(-3px)}
 .feat h3{font-size:22px;letter-spacing:-.02em;margin-bottom:8px}
 .feat p{color:var(--muted);font-size:15.5px}
 .quote{padding:80px 0;border-top:1px solid var(--line);max-width:820px}
@@ -74,24 +76,24 @@ footer a{margin-left:18px}footer a:hover{color:var(--text)}
   </div>
 </header>
 
-<div class="wrap"><div class="showcase">
+<div class="wrap reveal"><div class="showcase">
   <?php foreach($shots as $i=>$s): ?><img src="<?= attr($s) ?>" alt="<?= attr($L['name']) ?>" <?= $i===0?'loading="eager" fetchpriority="high"':'loading="lazy"' ?> decoding="async"><?php endforeach; ?>
 </div></div>
 
-<section id="features"><div class="wrap"><div class="feat">
+<section id="features" class="reveal"><div class="wrap"><div class="feat">
   <?php foreach(feature_points($S) as $c): ?>
   <div><div class="ic"><?= svg_icon($c[0],30) ?></div><h3><?= esc($c[1]) ?></h3><p><?= esc($c[2]) ?></p></div>
   <?php endforeach; ?>
 </div></div></section>
 
 <?php if(!empty($L['reviews'])): $q = $L['reviews'][1] ?? $L['reviews'][0]; ?>
-<section><div class="wrap quote">
+<section class="reveal"><div class="wrap quote">
   <p>“<?= esc($q[2]) ?>”</p>
   <div class="who"><?= stars_svg($q[1],$accent,15) ?> &nbsp;<?= esc($q[0]) ?> · <?= esc($S['verified']) ?></div>
 </div></section>
 <?php endif; ?>
 
-<section class="cta"><div class="wrap">
+<section class="cta reveal"><div class="wrap">
   <h2><?= esc($S['get']) ?> <?= esc($L['name']) ?></h2>
   <a class="btn" href="<?= attr($L['cta_url']) ?>"><?= svg_icon('down',18) ?> <?= esc($L['cta_text']) ?></a>
 </div></section>
@@ -100,5 +102,6 @@ footer a{margin-left:18px}footer a:hover{color:var(--text)}
   <span>© <?= esc($L['year']) ?> <?= esc($L['name']) ?></span>
   <span><a href="<?= attr($L['privacy_url']) ?>"><?= esc($S['privacy']) ?></a><a href="<?= attr($L['terms_url']) ?>"><?= esc($S['terms']) ?></a></span>
 </footer>
+<?= reveal_script() ?>
 </body>
 </html>

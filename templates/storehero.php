@@ -44,7 +44,8 @@ a{color:inherit;text-decoration:none}
 .section{padding:26px 0;border-top:1px solid var(--line)}
 .section h2{font-size:20px;font-weight:500;margin-bottom:16px}
 .shots{display:flex;gap:14px;overflow-x:auto;padding-bottom:8px}
-.shots img{height:340px;aspect-ratio:9/19;object-fit:cover;border-radius:14px;border:1px solid var(--line);flex:0 0 auto}
+.shots img{height:340px;aspect-ratio:9/19;object-fit:cover;border-radius:14px;border:1px solid var(--line);flex:0 0 auto;transition:transform .2s ease}
+.shots img:hover{transform:translateY(-3px)}
 .about{color:#39414f;font-size:15px;max-width:760px;white-space:pre-line}
 .tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
 .tag{background:var(--soft);border-radius:999px;padding:6px 14px;font-size:13px;color:var(--muted)}
@@ -89,13 +90,13 @@ footer a{margin-left:16px}footer a:hover{color:var(--text)}
     </div>
   </div>
 
-  <div class="section">
+  <div class="section reveal">
     <div class="shots">
       <?php foreach($shots as $s): ?><img src="<?= attr($s) ?>" alt="<?= attr($L['name']) ?>" loading="lazy" decoding="async"><?php endforeach; ?>
     </div>
   </div>
 
-  <div class="section">
+  <div class="section reveal">
     <h2><?= esc($S['about']) ?></h2>
     <p class="about"><?= esc($L['description'] ?: $S['join']) ?></p>
     <div class="tags">
@@ -105,7 +106,7 @@ footer a{margin-left:16px}footer a:hover{color:var(--text)}
     </div>
   </div>
 
-  <div class="section">
+  <div class="section reveal">
     <h2><?= esc($S['reviews']) ?></h2>
     <div class="ratewrap">
       <div class="bignum"><div class="n"><?= esc(number_format($L['rating'],1)) ?></div><?= stars_svg($L['rating'],$accent,15) ?><div class="muted"><?= number_format($rc) ?></div></div>
@@ -117,7 +118,7 @@ footer a{margin-left:16px}footer a:hover{color:var(--text)}
     <?php endforeach; endif; ?>
   </div>
 
-  <div class="section">
+  <div class="section reveal">
     <h2><?= esc($S['what_new']) ?></h2>
     <div class="info">
       <div><span><?= esc($S['updated']) ?></span><b><?= esc($L['year']) ?></b></div>
@@ -132,5 +133,6 @@ footer a{margin-left:16px}footer a:hover{color:var(--text)}
   <span>© <?= esc($L['year']) ?> <?= esc($L['name']) ?></span>
   <span><a href="<?= attr($L['privacy_url']) ?>"><?= esc($S['privacy']) ?></a><a href="<?= attr($L['terms_url']) ?>"><?= esc($S['terms']) ?></a></span>
 </footer>
+<?= reveal_script() ?>
 </body>
 </html>

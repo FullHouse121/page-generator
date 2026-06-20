@@ -50,13 +50,15 @@ section{padding:68px 0}
 .shead h2{font-size:clamp(28px,4vw,42px);font-weight:800;letter-spacing:-.02em}
 .shead p{color:var(--muted);font-size:17px;margin-top:10px}
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-.gcard{border-radius:20px;padding:28px}
+.gcard{border-radius:20px;padding:28px;transition:transform .2s ease,border-color .2s ease}
+.gcard:hover{transform:translateY(-4px);border-color:rgba(255,255,255,.22)}
 .gcard .ic{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;background:var(--glass);color:var(--accent);margin-bottom:16px}
 .gcard h3{font-size:19px;margin-bottom:8px}.gcard p{color:var(--muted);font-size:14.5px}
 .gallery{display:flex;gap:16px;overflow-x:auto;padding:6px 2px 16px;scroll-snap-type:x mandatory}
 .gallery img{height:440px;aspect-ratio:9/19;object-fit:cover;border-radius:24px;border:1px solid var(--line);flex:0 0 auto;scroll-snap-align:center}
 .rcards{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;max-width:880px;margin:0 auto}
-.rcard{border-radius:18px;padding:22px}
+.rcard{border-radius:18px;padding:22px;transition:transform .2s ease}
+.rcard:hover{transform:translateY(-3px)}
 .rcard p{color:var(--muted);font-size:14.5px;margin-top:10px}
 .rcard .who{display:flex;align-items:center;gap:10px;margin-top:14px}
 .av{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#49e0c4);display:grid;place-items:center;font-weight:800;color:#07070d}
@@ -94,7 +96,7 @@ footer a{margin-left:18px}footer a:hover{color:var(--text)}
   <div class="phone glass"><img src="<?= attr($shots[0]) ?>" alt="<?= attr($L['name']) ?>" width="280" height="570" loading="eager" fetchpriority="high" decoding="async"></div>
 </div></header>
 
-<section id="features"><div class="wrap">
+<section id="features" class="reveal"><div class="wrap">
   <div class="shead"><h2><?= esc($S['why']) ?></h2><p><?= esc($S['join']) ?></p></div>
   <div class="grid">
     <?php foreach(feature_points($S) as $c): ?>
@@ -103,13 +105,13 @@ footer a{margin-left:18px}footer a:hover{color:var(--text)}
   </div>
 </div></section>
 
-<section><div class="wrap">
+<section class="reveal"><div class="wrap">
   <div class="shead"><h2><?= esc($S['screens']) ?></h2></div>
   <div class="gallery"><?php foreach($shots as $s): ?><img src="<?= attr($s) ?>" alt="<?= attr($L['name']) ?>" loading="lazy" decoding="async"><?php endforeach; ?></div>
 </div></section>
 
 <?php if(!empty($L['reviews'])): ?>
-<section><div class="wrap">
+<section class="reveal"><div class="wrap">
   <div class="shead"><h2><?= esc($S['reviews']) ?></h2><p><?= esc(number_format($L['rating'],1)) ?> / 5 · <?= esc($L['rating_count']) ?></p></div>
   <div class="rcards">
     <?php foreach($L['reviews'] as $r): ?>
@@ -119,7 +121,7 @@ footer a{margin-left:18px}footer a:hover{color:var(--text)}
 </div></section>
 <?php endif; ?>
 
-<section><div class="wrap"><div class="final glass">
+<section class="reveal"><div class="wrap"><div class="final glass">
   <h2><?= esc($S['get']) ?> <?= esc($L['name']) ?></h2>
   <p><?= esc($S['cta_sub']) ?></p>
   <a class="btn" href="<?= attr($L['cta_url']) ?>"><?= svg_icon('down',18) ?> <?= esc($L['cta_text']) ?></a>
@@ -130,5 +132,6 @@ footer a{margin-left:18px}footer a:hover{color:var(--text)}
   <span>© <?= esc($L['year']) ?> <?= esc($L['name']) ?><?php if($L['developer']): ?> · <?= esc($L['developer']) ?><?php endif; ?></span>
   <span><a href="<?= attr($L['privacy_url']) ?>"><?= esc($S['privacy']) ?></a><a href="<?= attr($L['terms_url']) ?>"><?= esc($S['terms']) ?></a></span>
 </div></footer>
+<?= reveal_script() ?>
 </body>
 </html>

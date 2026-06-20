@@ -55,11 +55,14 @@ section{padding:70px 0}
 .shead h2{font-size:clamp(28px,4vw,44px);font-weight:800;letter-spacing:-.02em}
 .shead p{color:var(--muted);font-size:17px;margin-top:10px}
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:28px}
+.card{background:linear-gradient(180deg,rgba(255,255,255,.045),transparent 45%),var(--surface);border:1px solid var(--line);border-radius:20px;padding:28px;
+  box-shadow:0 18px 36px -22px rgba(0,0,0,.55),inset 0 1px rgba(255,255,255,.04);transition:transform .2s ease,border-color .2s ease}
+.card:hover{transform:translateY(-4px);border-color:rgba(255,255,255,.18)}
 .card .ic{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;background:rgba(255,255,255,.05);color:var(--accent);margin-bottom:16px}
 .card h3{font-size:19px;margin-bottom:8px}.card p{color:var(--muted);font-size:14.5px}
 .faq{max-width:760px;margin:0 auto}
-.q{border:1px solid var(--line);background:var(--surface);border-radius:14px;margin-bottom:12px;overflow:hidden}
+.q{border:1px solid var(--line);background:var(--surface);border-radius:14px;margin-bottom:12px;overflow:hidden;transition:border-color .2s ease}
+.q:hover{border-color:rgba(255,255,255,.18)}
 .q summary{list-style:none;cursor:pointer;padding:20px 22px;font-weight:700;display:flex;justify-content:space-between;align-items:center}
 .q summary::-webkit-details-marker{display:none}
 .q summary::after{content:"+";font-size:22px;color:var(--accent)}
@@ -94,7 +97,7 @@ footer a{margin-left:18px}footer a:hover{color:var(--text)}
   </div>
 </header>
 
-<section><div class="wrap">
+<section class="reveal"><div class="wrap">
   <div class="shead"><h2><?= esc($S['why']) ?></h2><p><?= esc($S['join']) ?></p></div>
   <div class="grid">
     <div class="card"><div class="ic"><?= svg_icon('bolt',24) ?></div><h3><?= esc($S['features']) ?></h3><p><?= esc($S['b_fast']) ?></p></div>
@@ -103,7 +106,7 @@ footer a{margin-left:18px}footer a:hover{color:var(--text)}
   </div>
 </div></section>
 
-<section style="background:var(--surface)"><div class="wrap">
+<section class="reveal" style="background:var(--surface)"><div class="wrap">
   <div class="shead"><h2><?= esc($S['faq']) ?></h2></div>
   <div class="faq">
     <?php foreach($faq as $f): ?>
@@ -112,7 +115,7 @@ footer a{margin-left:18px}footer a:hover{color:var(--text)}
   </div>
 </div></section>
 
-<section><div class="wrap"><div class="final">
+<section class="reveal"><div class="wrap"><div class="final">
   <h2><?= esc($S['get']) ?> <?= esc($L['name']) ?></h2>
   <p><?= esc($S['cta_sub']) ?></p>
   <a class="btn" href="<?= attr($L['cta_url']) ?>"><?= svg_icon('down',18) ?> <?= esc($L['cta_text']) ?></a>
@@ -122,5 +125,6 @@ footer a{margin-left:18px}footer a:hover{color:var(--text)}
   <span>© <?= esc($L['year']) ?> <?= esc($L['name']) ?><?php if($L['developer']): ?> · <?= esc($L['developer']) ?><?php endif; ?></span>
   <span><a href="<?= attr($L['privacy_url']) ?>"><?= esc($S['privacy']) ?></a><a href="<?= attr($L['terms_url']) ?>"><?= esc($S['terms']) ?></a></span>
 </div></footer>
+<?= reveal_script() ?>
 </body>
 </html>

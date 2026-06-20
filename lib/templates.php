@@ -546,3 +546,18 @@ function feature_points(array $S): array {
         ['heart',   $S['why'],      $S['b_loved']],
     ];
 }
+
+/**
+ * Tiny scroll-reveal: fades + slides up any element with class="reveal" as it
+ * enters the viewport. No library, ~300 bytes. Never applied to the hero —
+ * only below-the-fold sections — so the page never depends on JS to render
+ * anything critical; if JS fails entirely, .reveal elements just stay visible
+ * via the no-JS fallback rule below.
+ */
+function reveal_script(): string {
+    return <<<HTML
+<style>.reveal{opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s ease}.reveal.in{opacity:1;transform:translateY(0)}</style>
+<noscript><style>.reveal{opacity:1;transform:none}</style></noscript>
+<script>(function(){var e=document.querySelectorAll('.reveal');if(!('IntersectionObserver' in window)){e.forEach(function(n){n.classList.add('in')});return}var o=new IntersectionObserver(function(l){l.forEach(function(n){if(n.isIntersecting){n.target.classList.add('in');o.unobserve(n.target)}})},{threshold:.15});e.forEach(function(n){o.observe(n)})})();</script>
+HTML;
+}

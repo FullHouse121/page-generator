@@ -24,10 +24,12 @@ html{scroll-behavior:smooth}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden}
 .wrap{max-width:1080px;margin:0 auto;padding:0 22px}
 a{color:inherit;text-decoration:none}
-.btn{display:inline-flex;align-items:center;gap:9px;background:var(--accent);color:#fff;font-weight:700;
+.btn{position:relative;overflow:hidden;isolation:isolate;display:inline-flex;align-items:center;gap:9px;background:var(--accent);color:#fff;font-weight:700;
      padding:15px 30px;border-radius:14px;font-size:16px;border:0;cursor:pointer;transition:transform .15s,box-shadow .15s;
      box-shadow:0 10px 30px -8px var(--accent)}
 .btn:hover{transform:translateY(-2px);box-shadow:0 16px 40px -8px var(--accent)}
+.btn::after{content:"";position:absolute;top:0;left:-60%;width:45%;height:100%;background:linear-gradient(120deg,transparent,rgba(255,255,255,.35),transparent);transform:skewX(-20deg);transition:left .5s ease}
+.btn:hover::after{left:130%}
 .btn-ghost{background:rgba(255,255,255,.06);box-shadow:none;border:1px solid var(--border)}
 /* nav */
 nav{position:sticky;top:0;z-index:30;backdrop-filter:blur(12px);background:rgba(10,11,20,.7);border-bottom:1px solid var(--border)}
@@ -60,13 +62,17 @@ section{padding:64px 0}
 .shead h2{font-size:clamp(26px,3.4vw,38px);letter-spacing:-.02em;margin-bottom:12px}
 .shead p{color:var(--muted);font-size:17px}
 .feat{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
-.fcard{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:26px}
+.fcard{background:linear-gradient(180deg,rgba(255,255,255,.045),transparent 45%),var(--card);border:1px solid var(--border);border-radius:18px;padding:26px;
+  box-shadow:0 18px 36px -22px rgba(0,0,0,.55),inset 0 1px rgba(255,255,255,.04);transition:transform .2s ease,border-color .2s ease}
+.fcard:hover{transform:translateY(-4px);border-color:rgba(255,255,255,.18)}
 .fcard .ic{width:48px;height:48px;border-radius:13px;display:grid;place-items:center;background:rgba(255,255,255,.06);color:var(--accent);margin-bottom:16px}
 .fcard h3{font-size:18px;margin-bottom:7px}.fcard p{color:var(--muted);font-size:14.5px}
 .gallery{display:flex;gap:16px;overflow-x:auto;padding:6px 2px 16px;scroll-snap-type:x mandatory}
 .gallery img{height:440px;aspect-ratio:9/19;object-fit:cover;border-radius:22px;border:1px solid var(--border);scroll-snap-align:center;flex:0 0 auto;background:var(--card)}
 .reviews{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;max-width:860px;margin:0 auto}
-.rcard{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px}
+.rcard{background:linear-gradient(180deg,rgba(255,255,255,.04),transparent 45%),var(--card);border:1px solid var(--border);border-radius:16px;padding:22px;
+  box-shadow:0 14px 30px -20px rgba(0,0,0,.5);transition:transform .2s ease}
+.rcard:hover{transform:translateY(-3px)}
 .rcard .top{display:flex;align-items:center;gap:12px;margin-bottom:10px}
 .av{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#222);display:grid;place-items:center;font-weight:800}
 .rcard p{color:var(--muted);font-size:14.5px}
@@ -103,7 +109,7 @@ footer a{margin-left:18px}footer a:hover{color:var(--text)}
   <div class="phone"><img src="<?= attr($shots[0]) ?>" alt="<?= attr($L['name']) ?>" width="280" height="570" loading="eager" fetchpriority="high" decoding="async"></div>
 </div></header>
 
-<section id="features"><div class="wrap">
+<section id="features" class="reveal"><div class="wrap">
   <div class="shead"><h2><?= esc($S['why']) ?></h2><p><?= esc($L['tagline'] ?: $S['join']) ?></p></div>
   <div class="feat">
     <?php foreach(feature_points($S) as $c): ?>
@@ -112,7 +118,7 @@ footer a{margin-left:18px}footer a:hover{color:var(--text)}
   </div>
 </div></section>
 
-<section style="background:var(--surface)"><div class="wrap">
+<section style="background:var(--surface)" class="reveal"><div class="wrap">
   <div class="shead"><h2><?= esc($S['screens']) ?></h2></div>
   <div class="gallery">
     <?php foreach($shots as $s): ?><img src="<?= attr($s) ?>" alt="<?= attr($L['name']) ?>" loading="lazy" decoding="async"><?php endforeach; ?>
@@ -120,7 +126,7 @@ footer a{margin-left:18px}footer a:hover{color:var(--text)}
 </div></section>
 
 <?php if(!empty($L['reviews'])): ?>
-<section><div class="wrap">
+<section class="reveal"><div class="wrap">
   <div class="shead"><h2><?= esc($S['reviews']) ?></h2><p><?= esc(number_format($L['rating'],1)) ?> / 5 · <?= esc($L['rating_count']) ?></p></div>
   <div class="reviews">
     <?php foreach($L['reviews'] as $r): ?>
@@ -132,7 +138,7 @@ footer a{margin-left:18px}footer a:hover{color:var(--text)}
 </div></section>
 <?php endif; ?>
 
-<section><div class="wrap"><div class="final">
+<section class="reveal"><div class="wrap"><div class="final">
   <h2><?= esc($S['get']) ?> <?= esc($L['name']) ?></h2>
   <p><?= esc($S['cta_sub']) ?></p>
   <a class="btn" href="<?= attr($L['cta_url']) ?>"><?= svg_icon('down',18) ?> <?= esc($L['cta_text']) ?></a>
@@ -145,5 +151,6 @@ footer a{margin-left:18px}footer a:hover{color:var(--text)}
     <a href="<?= attr($L['terms_url']) ?>"><?= esc($S['terms']) ?></a>
   </div>
 </div></footer>
+<?= reveal_script() ?>
 </body>
 </html>
