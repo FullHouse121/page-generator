@@ -363,7 +363,11 @@ function trust_band(array $L, array $form): string {
     $support = trim($form['support_email'] ?? '');
     $company = trim($form['company'] ?? '') ?: $L['name'];
     $age = !empty($form['age18']);
-    $items = [['lock', $S['ssl']], ['shield', $S['verified_dev']], ['check', $S['free_safe']]];
+    $items = [['lock', $S['ssl']]];
+    // "Developer: X" is a factual attribution from the fetched store listing, not a
+    // verification claim — only shown when we actually have a real developer name.
+    if (!empty($L['developer'])) $items[] = ['shield', $S['verified_dev'] . ': ' . $L['developer']];
+    $items[] = ['check', $S['free_safe']];
     $h  = '<section style="border-top:1px solid var(--line,var(--border,rgba(128,128,128,.18)));padding:30px 22px;text-align:center;font-family:inherit">';
     $h .= '<div style="display:flex;gap:26px;justify-content:center;flex-wrap:wrap;max-width:760px;margin:0 auto 14px">';
     foreach ($items as $it) {
