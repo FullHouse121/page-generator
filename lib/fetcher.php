@@ -99,7 +99,7 @@ function parse_apple(string $html, array &$data): void {
 
             if (!empty($node['aggregateRating'])) {
                 $ar = $node['aggregateRating'];
-                if (!empty($ar['ratingValue'])) $data['rating']       = (string)round((float)$ar['ratingValue'], 1);
+                if (!empty($ar['ratingValue'])) { $data['rating'] = (string)round((float)$ar['ratingValue'], 1); $data['_rating_real'] = true; }
                 if (!empty($ar['ratingCount'])) $data['rating_count'] = number_format((int)$ar['ratingCount']);
                 elseif (!empty($ar['reviewCount'])) $data['rating_count'] = number_format((int)$ar['reviewCount']);
             }
@@ -130,9 +130,9 @@ function parse_google(string $html, array &$data): void {
     }
     // Rating value e.g. 4.6
     if (preg_match('#\[\[\["?([0-5]\.[0-9])"?\]#', $html, $m)) {
-        $data['rating'] = $m[1];
+        $data['rating'] = $m[1]; $data['_rating_real'] = true;
     } elseif (preg_match('#Rated ([0-5](?:\.[0-9])?) stars#i', $html, $m)) {
-        $data['rating'] = $m[1];
+        $data['rating'] = $m[1]; $data['_rating_real'] = true;
     }
     // Downloads e.g. 1,000,000+
     if (preg_match('#([0-9][0-9.,]*[KMB]?\+)\s*(?:downloads|descargas)#i', $html, $m)) {

@@ -132,7 +132,7 @@ function lpf_strings(string $lang): array {
             'free_safe' => 'Free · No malware', 'support' => 'Support',
             'age_note' => '18+ only — please play responsibly.',
             'cookie_text' => 'We use cookies to improve your experience.', 'cookie_ok' => 'Got it',
-            'rank_title' => 'Top Ranked Apps', 'rank_sub' => 'Based on ratings and downloads this month', 'rank_pick' => 'Top Pick',
+            'rank_title' => 'Compare Similar Apps', 'rank_sub' => 'Ratings shown come from each app\'s official store listing.', 'rank_pick' => 'This app',
         ],
         'es' => [
             'get' => 'Descargar App', 'download' => 'Descargar Gratis', 'install' => 'Instalar',
@@ -153,7 +153,7 @@ function lpf_strings(string $lang): array {
             'free_safe' => 'Gratis · Sin malware', 'support' => 'Soporte',
             'age_note' => 'Solo +18 — juega con responsabilidad.',
             'cookie_text' => 'Usamos cookies para mejorar tu experiencia.', 'cookie_ok' => 'Entendido',
-            'rank_title' => 'Apps Más Valoradas', 'rank_sub' => 'Según calificaciones y descargas de este mes', 'rank_pick' => 'Más Recomendada',
+            'rank_title' => 'Compara Apps Similares', 'rank_sub' => 'Las calificaciones provienen de la ficha oficial de cada app en la tienda.', 'rank_pick' => 'Esta app',
         ],
         'pt' => [
             'get' => 'Baixar App', 'download' => 'Baixar Grátis', 'install' => 'Instalar',
@@ -174,7 +174,7 @@ function lpf_strings(string $lang): array {
             'free_safe' => 'Grátis · Sem malware', 'support' => 'Suporte',
             'age_note' => 'Apenas +18 — jogue com responsabilidade.',
             'cookie_text' => 'Usamos cookies para melhorar sua experiência.', 'cookie_ok' => 'Entendi',
-            'rank_title' => 'Apps Mais Bem Avaliados', 'rank_sub' => 'Com base em avaliações e downloads deste mês', 'rank_pick' => 'Mais Recomendado',
+            'rank_title' => 'Compare Apps Semelhantes', 'rank_sub' => 'As avaliações vêm da ficha oficial de cada app na loja.', 'rank_pick' => 'Este app',
         ],
     ];
     foreach (lpf_strings_extra() as $code => $vals) { $dict[$code] = $vals; }
@@ -204,7 +204,7 @@ function lpf_strings_extra(): array {
             'free_safe' => 'Gratuit · Sans malware', 'support' => 'Assistance',
             'age_note' => 'Réservé aux +18 ans — jouez de manière responsable.',
             'cookie_text' => 'Nous utilisons des cookies pour améliorer votre expérience.', 'cookie_ok' => 'Compris',
-            'rank_title' => 'Applications les Mieux Classées', 'rank_sub' => 'Basé sur les notes et téléchargements de ce mois', 'rank_pick' => 'Meilleur Choix',
+            'rank_title' => 'Comparer des Apps Similaires', 'rank_sub' => 'Les notes affichées proviennent de la fiche officielle de chaque application.', 'rank_pick' => 'Cette application',
         ],
         'de' => [
             'get' => 'App herunterladen', 'download' => 'Kostenlos herunterladen', 'install' => 'Installieren',
@@ -225,7 +225,7 @@ function lpf_strings_extra(): array {
             'free_safe' => 'Kostenlos · Kein Malware', 'support' => 'Support',
             'age_note' => 'Nur ab 18 — bitte verantwortungsbewusst spielen.',
             'cookie_text' => 'Wir verwenden Cookies, um deine Erfahrung zu verbessern.', 'cookie_ok' => 'Verstanden',
-            'rank_title' => 'Bestbewertete Apps', 'rank_sub' => 'Basierend auf Bewertungen und Downloads diesen Monat', 'rank_pick' => 'Top-Empfehlung',
+            'rank_title' => 'Ähnliche Apps Vergleichen', 'rank_sub' => 'Die angezeigten Bewertungen stammen aus dem offiziellen Store-Eintrag jeder App.', 'rank_pick' => 'Diese App',
         ],
         'it' => [
             'get' => "Scarica l'app", 'download' => 'Scarica gratis', 'install' => 'Installa',
@@ -246,7 +246,7 @@ function lpf_strings_extra(): array {
             'free_safe' => 'Gratis · Senza malware', 'support' => 'Assistenza',
             'age_note' => 'Solo +18 — gioca in modo responsabile.',
             'cookie_text' => 'Utilizziamo i cookie per migliorare la tua esperienza.', 'cookie_ok' => 'Capito',
-            'rank_title' => 'App Più Votate', 'rank_sub' => 'Basato su valutazioni e download di questo mese', 'rank_pick' => 'Scelta Migliore',
+            'rank_title' => 'Confronta App Simili', 'rank_sub' => 'Le valutazioni mostrate provengono dalla scheda ufficiale di ogni app nello store.', 'rank_pick' => 'Questa app',
         ],
         'nl' => [
             'get' => 'App downloaden', 'download' => 'Gratis downloaden', 'install' => 'Installeren',
@@ -267,7 +267,7 @@ function lpf_strings_extra(): array {
             'free_safe' => 'Gratis · Geen malware', 'support' => 'Ondersteuning',
             'age_note' => 'Alleen 18+ — speel verantwoord.',
             'cookie_text' => 'We gebruiken cookies om je ervaring te verbeteren.', 'cookie_ok' => 'Begrepen',
-            'rank_title' => 'Best Beoordeelde Apps', 'rank_sub' => 'Gebaseerd op beoordelingen en downloads deze maand', 'rank_pick' => 'Topkeuze',
+            'rank_title' => 'Vergelijk Soortgelijke Apps', 'rank_sub' => 'De getoonde beoordelingen komen van de officiële storevermelding van elke app.', 'rank_pick' => 'Deze app',
         ],
         'pl' => [
             'get' => 'Pobierz aplikację', 'download' => 'Pobierz bezpłatnie', 'install' => 'Zainstaluj',
@@ -288,7 +288,7 @@ function lpf_strings_extra(): array {
             'free_safe' => 'Bezpłatna · Bez malware', 'support' => 'Wsparcie',
             'age_note' => 'Tylko 18+ — graj odpowiedzialnie.',
             'cookie_text' => 'Używamy plików cookie, aby poprawić twoje doświadczenie.', 'cookie_ok' => 'Rozumiem',
-            'rank_title' => 'Najlepiej Oceniane Aplikacje', 'rank_sub' => 'Na podstawie ocen i pobrań w tym miesiącu', 'rank_pick' => 'Najlepszy Wybór',
+            'rank_title' => 'Porównaj Podobne Aplikacje', 'rank_sub' => 'Wyświetlane oceny pochodzą z oficjalnej karty każdej aplikacji w sklepie.', 'rank_pick' => 'Ta aplikacja',
         ],
         'ro' => [
             'get' => 'Descarcă aplicația', 'download' => 'Descarcă gratuit', 'install' => 'Instalează',
@@ -309,7 +309,7 @@ function lpf_strings_extra(): array {
             'free_safe' => 'Gratuită · Fără malware', 'support' => 'Asistență',
             'age_note' => 'Doar 18+ — joacă responsabil.',
             'cookie_text' => 'Folosim cookie-uri pentru a-ți îmbunătăți experiența.', 'cookie_ok' => 'Am înțeles',
-            'rank_title' => 'Cele Mai Apreciate Aplicații', 'rank_sub' => 'Pe baza evaluărilor și descărcărilor din această lună', 'rank_pick' => 'Recomandarea Lunii',
+            'rank_title' => 'Compară Aplicații Similare', 'rank_sub' => 'Evaluările afișate provin din pagina oficială a fiecărei aplicații din magazin.', 'rank_pick' => 'Această aplicație',
         ],
         'ru' => [
             'get' => 'Скачать приложение', 'download' => 'Скачать бесплатно', 'install' => 'Установить',
@@ -330,7 +330,7 @@ function lpf_strings_extra(): array {
             'free_safe' => 'Бесплатно · Без вредоносного ПО', 'support' => 'Поддержка',
             'age_note' => 'Только 18+ — играйте ответственно.',
             'cookie_text' => 'Мы используем файлы cookie для улучшения вашего опыта.', 'cookie_ok' => 'Понятно',
-            'rank_title' => 'Лучшие Приложения', 'rank_sub' => 'На основе оценок и загрузок за этот месяц', 'rank_pick' => 'Лучший Выбор',
+            'rank_title' => 'Сравнить Похожие Приложения', 'rank_sub' => 'Указанные оценки взяты из официальной страницы каждого приложения в магазине.', 'rank_pick' => 'Это приложение',
         ],
         'tr' => [
             'get' => 'Uygulamayı indir', 'download' => 'Ücretsiz indir', 'install' => 'Yükle',
@@ -351,7 +351,7 @@ function lpf_strings_extra(): array {
             'free_safe' => 'Ücretsiz · Zararlı yazılım yok', 'support' => 'Destek',
             'age_note' => 'Sadece 18+ — lütfen sorumlu oynayın.',
             'cookie_text' => 'Deneyiminizi iyileştirmek için çerezler kullanıyoruz.', 'cookie_ok' => 'Anladım',
-            'rank_title' => 'En Çok Beğenilen Uygulamalar', 'rank_sub' => 'Bu ayın puanlarına ve indirmelerine göre', 'rank_pick' => 'En İyi Seçim',
+            'rank_title' => 'Benzer Uygulamaları Karşılaştır', 'rank_sub' => 'Gösterilen puanlar her uygulamanın resmi mağaza sayfasından alınmıştır.', 'rank_pick' => 'Bu uygulama',
         ],
         'id' => [
             'get' => 'Unduh Aplikasi', 'download' => 'Unduh Gratis', 'install' => 'Pasang',
@@ -372,7 +372,7 @@ function lpf_strings_extra(): array {
             'free_safe' => 'Gratis · Tanpa malware', 'support' => 'Dukungan',
             'age_note' => 'Hanya 18+ — mainkan dengan bijak.',
             'cookie_text' => 'Kami menggunakan cookie untuk meningkatkan pengalaman Anda.', 'cookie_ok' => 'Mengerti',
-            'rank_title' => 'Aplikasi dengan Peringkat Teratas', 'rank_sub' => 'Berdasarkan rating dan unduhan bulan ini', 'rank_pick' => 'Pilihan Terbaik',
+            'rank_title' => 'Bandingkan Aplikasi Serupa', 'rank_sub' => 'Rating yang ditampilkan berasal dari halaman resmi toko setiap aplikasi.', 'rank_pick' => 'Aplikasi ini',
         ],
         'vi' => [
             'get' => 'Tải ứng dụng', 'download' => 'Tải miễn phí', 'install' => 'Cài đặt',
@@ -393,7 +393,7 @@ function lpf_strings_extra(): array {
             'free_safe' => 'Miễn phí · Không có mã độc', 'support' => 'Hỗ trợ',
             'age_note' => 'Chỉ dành cho 18+ — vui chơi có trách nhiệm.',
             'cookie_text' => 'Chúng tôi sử dụng cookie để cải thiện trải nghiệm của bạn.', 'cookie_ok' => 'Đã hiểu',
-            'rank_title' => 'Ứng Dụng Được Đánh Giá Cao Nhất', 'rank_sub' => 'Dựa trên xếp hạng và lượt tải trong tháng này', 'rank_pick' => 'Lựa Chọn Hàng Đầu',
+            'rank_title' => 'So Sánh Các Ứng Dụng Tương Tự', 'rank_sub' => 'Xếp hạng hiển thị được lấy từ trang chính thức của từng ứng dụng trên cửa hàng.', 'rank_pick' => 'Ứng dụng này',
         ],
         'th' => [
             'get' => 'ดาวน์โหลดแอป', 'download' => 'ดาวน์โหลดฟรี', 'install' => 'ติดตั้ง',
@@ -414,7 +414,7 @@ function lpf_strings_extra(): array {
             'free_safe' => 'ฟรี · ไม่มีมัลแวร์', 'support' => 'ฝ่ายสนับสนุน',
             'age_note' => 'สำหรับผู้ที่มีอายุ 18 ปีขึ้นไปเท่านั้น — กรุณาเล่นอย่างมีความรับผิดชอบ',
             'cookie_text' => 'เราใช้คุกกี้เพื่อปรับปรุงประสบการณ์ของคุณ', 'cookie_ok' => 'เข้าใจแล้ว',
-            'rank_title' => 'แอปที่ได้รับการจัดอันดับสูงสุด', 'rank_sub' => 'อ้างอิงจากคะแนนและยอดดาวน์โหลดในเดือนนี้', 'rank_pick' => 'ตัวเลือกอันดับ 1',
+            'rank_title' => 'เปรียบเทียบแอปที่คล้ายกัน', 'rank_sub' => 'คะแนนที่แสดงมาจากหน้าร้านค้าทางการของแต่ละแอป', 'rank_pick' => 'แอปนี้',
         ],
         'hi' => [
             'get' => 'ऐप डाउनलोड करें', 'download' => 'मुफ़्त डाउनलोड करें', 'install' => 'इंस्टॉल करें',
@@ -435,7 +435,7 @@ function lpf_strings_extra(): array {
             'free_safe' => 'मुफ़्त · मैलवेयर-मुक्त', 'support' => 'सहायता',
             'age_note' => 'केवल 18+ — ज़िम्मेदारी से खेलें।',
             'cookie_text' => 'हम आपके अनुभव को बेहतर बनाने के लिए कुकीज़ का उपयोग करते हैं।', 'cookie_ok' => 'समझ गया',
-            'rank_title' => 'टॉप रेटेड ऐप्स', 'rank_sub' => 'इस महीने की रेटिंग और डाउनलोड के आधार पर', 'rank_pick' => 'टॉप पिक',
+            'rank_title' => 'समान ऐप्स की तुलना करें', 'rank_sub' => 'दिखाई गई रेटिंग प्रत्येक ऐप की आधिकारिक स्टोर लिस्टिंग से ली गई हैं।', 'rank_pick' => 'यह ऐप',
         ],
         'ja' => [
             'get' => 'アプリを入手', 'download' => '無料ダウンロード', 'install' => 'インストール',
@@ -456,7 +456,7 @@ function lpf_strings_extra(): array {
             'free_safe' => '無料 · マルウェアなし', 'support' => 'サポート',
             'age_note' => '18歳以上限定 — 責任を持ってご利用ください。',
             'cookie_text' => 'より良い体験のためにクッキーを使用しています。', 'cookie_ok' => '了解',
-            'rank_title' => '最も評価の高いアプリ', 'rank_sub' => '今月の評価とダウンロード数に基づく', 'rank_pick' => 'おすすめNo.1',
+            'rank_title' => '似たアプリを比較', 'rank_sub' => '表示されている評価は各アプリの公式ストアページから取得しています。', 'rank_pick' => 'このアプリ',
         ],
         'ko' => [
             'get' => '앱 다운로드', 'download' => '무료 다운로드', 'install' => '설치',
@@ -477,7 +477,7 @@ function lpf_strings_extra(): array {
             'free_safe' => '무료 · 악성코드 없음', 'support' => '지원',
             'age_note' => '18세 이상만 — 책임감 있게 이용하세요.',
             'cookie_text' => '더 나은 경험을 위해 쿠키를 사용합니다.', 'cookie_ok' => '확인',
-            'rank_title' => '최고 평점 앱', 'rank_sub' => '이번 달 평점 및 다운로드 기준', 'rank_pick' => '추천 1위',
+            'rank_title' => '유사 앱 비교', 'rank_sub' => '표시된 평점은 각 앱의 공식 스토어 페이지에서 가져온 것입니다.', 'rank_pick' => '이 앱',
         ],
         'zh' => [
             'get' => '获取应用', 'download' => '免费下载', 'install' => '安装',
@@ -498,7 +498,7 @@ function lpf_strings_extra(): array {
             'free_safe' => '免费 · 无恶意软件', 'support' => '支持',
             'age_note' => '仅限18岁以上 — 请理性使用。',
             'cookie_text' => '我们使用 Cookie 来改善您的体验。', 'cookie_ok' => '知道了',
-            'rank_title' => '评分最高的应用', 'rank_sub' => '根据本月评分和下载量', 'rank_pick' => '首选推荐',
+            'rank_title' => '比较类似应用', 'rank_sub' => '显示的评分来自每个应用的官方商店页面。', 'rank_pick' => '本应用',
         ],
         'ar' => [
             'get' => 'تنزيل التطبيق', 'download' => 'تنزيل مجاني', 'install' => 'تثبيت',
@@ -519,7 +519,7 @@ function lpf_strings_extra(): array {
             'free_safe' => 'مجاني · بلا برامج ضارة', 'support' => 'الدعم',
             'age_note' => 'لمن هم +18 فقط — يرجى اللعب بمسؤولية.',
             'cookie_text' => 'نستخدم ملفات تعريف الارتباط لتحسين تجربتك.', 'cookie_ok' => 'حسنًا',
-            'rank_title' => 'أعلى التطبيقات تقييمًا', 'rank_sub' => 'بناءً على التقييمات وعمليات التنزيل لهذا الشهر', 'rank_pick' => 'الأفضل اختيارًا',
+            'rank_title' => 'مقارنة تطبيقات مماثلة', 'rank_sub' => 'التقييمات المعروضة مأخوذة من صفحة المتجر الرسمية لكل تطبيق.', 'rank_pick' => 'هذا التطبيق',
         ],
     ];
 }

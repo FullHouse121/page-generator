@@ -53,7 +53,7 @@ if ($action === 'preview') {
         'lang'=>v('lang','en'),'accent'=>v('accent'),
         'seo_title'=>v('seo_title'),'seo_desc'=>v('seo_desc'),'og_image'=>v('og_image'),
         'trust_badges'=>!empty($_POST['trust_badges']),'cookie_banner'=>!empty($_POST['cookie_banner']),
-        'show_ranking'=>!empty($_POST['show_ranking']),
+        'competitor_urls'=>v('competitor_urls'),
         'age18'=>!empty($_POST['age18']),'support_email'=>v('support_email'),'company'=>v('company'),
     ]);
     exit;
@@ -171,7 +171,7 @@ if ($action === 'generate'):
         'tracker_url'=>v('tracker_url'),'tracker_token'=>v('tracker_token'),
         'seo_title'=>v('seo_title'),'seo_desc'=>v('seo_desc'),'og_image'=>v('og_image'),
         'trust_badges'=>!empty($_POST['trust_badges']),'cookie_banner'=>!empty($_POST['cookie_banner']),
-        'show_ranking'=>!empty($_POST['show_ranking']),
+        'competitor_urls'=>v('competitor_urls'),
         'age18'=>!empty($_POST['age18']),'support_email'=>v('support_email'),'company'=>v('company'),
     ];
     $res = build_landing($form);
@@ -321,10 +321,9 @@ elseif ($action === 'fetch'):
   </div>
 
   <div class="card">
-    <h2>5 · Trust &amp; SEO <span class="muted" style="font-weight:400;font-size:13px">— makes the page look more legitimate</span></h2>
+    <h2>5 · Trust &amp; SEO</h2>
     <p class="hint">Adds JSON-LD structured data (always), plus optional trust badges, cookie notice and a richer footer. Override the SEO tags if you want.</p>
     <div class="opts">
-      <label class="opt"><input type="checkbox" name="show_ranking" value="1" checked><div><b>"Top ranked apps" leaderboard</b><small>Shows the app at #1 in a short ranked list, with 4 generic comparison apps below it.</small></div></label>
       <label class="opt"><input type="checkbox" name="trust_badges" value="1" checked><div><b>Trust badges + footer</b><small>Secure · Verified developer · Free, plus a copyright / support line above the footer.</small></div></label>
       <label class="opt"><input type="checkbox" name="cookie_banner" value="1" checked><div><b>Cookie consent banner</b><small>Small dismissible notice that links your privacy policy.</small></div></label>
       <label class="opt"><input type="checkbox" name="age18" value="1"><div><b>18+ / responsible-use note</b><small>Adds an age + responsible-use line (recommended for casino / betting).</small></div></label>
@@ -336,6 +335,16 @@ elseif ($action === 'fetch'):
     <label class="f"><span>Custom page title <span class="muted">(SEO — optional)</span></span><input type="text" name="seo_title" value="" placeholder="leave blank to auto-generate"></label>
     <label class="f"><span>Meta description <span class="muted">(SEO — optional)</span></span><input type="text" name="seo_desc" value="" placeholder="leave blank to use the tagline"></label>
     <label class="f"><span>Social share image URL <span class="muted">(og:image — optional)</span></span><input type="url" name="og_image" value="" placeholder="https://.../share.jpg"></label>
+  </div>
+
+  <div class="card">
+    <h2>6 · Compare to real apps <span class="muted" style="font-weight:400;font-size:13px">— optional</span></h2>
+    <p class="hint">Paste links to other real apps on Google Play / the App Store (one per line). The generator fetches
+      each one's <b>real</b> name, icon and rating from its own listing and shows them next to yours, sorted by actual
+      rating — nothing here is invented. Leave blank to skip this section entirely.</p>
+    <label class="f"><span>Competitor app links <span class="muted">(up to 6, one per line)</span></span>
+      <textarea name="competitor_urls" placeholder="https://play.google.com/store/apps/details?id=...&#10;https://apps.apple.com/app/..."></textarea>
+    </label>
   </div>
 
   <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:30px">

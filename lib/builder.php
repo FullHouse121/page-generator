@@ -6,6 +6,7 @@
 require_once __DIR__ . '/helpers.php';
 require_once __DIR__ . '/templates.php';
 require_once __DIR__ . '/legal.php';
+require_once __DIR__ . '/fetcher.php';
 
 const OUTPUT_DIR = __DIR__ . '/../output';
 
@@ -409,9 +410,11 @@ function apply_enhancements(string $html, array $form, array $L): string {
     // --- structured data (always) ---
     $html = str_replace('</head>', jsonld_app($L) . "\n</head>", $html);
 
-    // --- "top ranked apps" leaderboard (before footer if present, else before </body>) ---
-    if (!isset($form['show_ranking']) || $form['show_ranking']) {
-        $rank = ranking_section($L);
+    // --- comparison section vs. real competitor apps (before footer, else before </body>) ---
+    $competitorUrls = preg_split('/\r\n|\r|\n/', trim($form['competitor_urls'] ?? ''));
+    $competitors = fetch_competitors(array_filter($competitorUrls));
+    $rank = ranking_section($L, $competitors);
+    if ($rank !== '') {
         $pos = stripos($html, '<footer');
         $html = ($pos !== false) ? substr($html, 0, $pos) . $rank . substr($html, $pos)
                                  : str_replace('</body>', $rank . '</body>', $html);
@@ -442,58 +445,82 @@ function hex2rgba(string $hex, float $alpha): string {
 }
 
 /**
- * "Top ranked apps" leaderboard — the generated app at #1, plus 4 generic
- * filler competitors (no real app names) for social-proof / "best of" framing.
+ * Fetch real metadata (name, icon, rating) for each competitor store link the
+ * user pasted in. No invented names or numbers — rows with no fetchable rating
+ * are dropped rather than guessed.
  */
-function ranking_section(array $L): string {
+function fetch_competitors(array $urls): array {
+    $out = [];
+    foreach (array_slice($urls, 0, 6) as $url) {
+        $url = trim($url);
+        if ($url === '' || !preg_match('#^https?://#i', $url)) continue;
+        $meta = fetch_app_meta($url);
+        // fetch_app_meta() falls back to 'My App' / a placeholder rating when scraping fails —
+        // require the explicit "_rating_real" flag so a failed fetch can't masquerade as data.
+        if (empty($meta['_rating_real']) || empty($meta['name']) || $meta['name'] === 'My App') continue;
+        $out[] = [
+            'name' => $meta['name'], 'icon' => $meta['icon'] ?? '',
+            'rating' => (float)$meta['rating'], 'source_url' => $url,
+        ];
+    }
+    return $out;
+}
+
+/**
+ * Comparison section — the generated app plus real competitor apps the user
+ * supplied links for. All ratings/names come from the competitors' own store
+ * listings (fetched live); nothing here is invented. Sorted by real rating.
+ * Returns '' if no competitor data was fetched (no comparison without data).
+ */
+function ranking_section(array $L, array $competitors): string {
+    if (empty($competitors)) return '';
     $S = $L['S']; $a = $L['accent'];
-    $pool   = ['Nova','Pulse','Vortex','Byte','Drift','Halo','Crisp','Flux','Orbit','Snap','Verve','Quartz'];
-    $colors = ['#64b8ff','#a15bff','#49e0c4','#f7c625','#ff9357','#ff7da3'];
-    $seed   = crc32($L['name'] ?: 'app');
-    $start  = $seed % count($pool);
-    $downloadsPool = ['820K+', '540K+', '310K+', '180K+'];
-    $heroRating = (float)$L['rating'];
 
     $rows = [];
     $rows[] = [
-        'rank' => 1, 'hero' => true, 'name' => $L['name'],
+        'is_this' => true, 'name' => $L['name'], 'icon' => $L['icon'] ?? '',
         'letter' => mb_substr($L['name'] ?: 'A', 0, 1), 'color' => $a,
-        'rating' => $heroRating, 'downloads' => $L['downloads'] ?: $downloadsPool[0],
+        'rating' => (float)$L['rating'], 'url' => null,
     ];
-    for ($i = 0; $i < 4; $i++) {
-        $name = $pool[($start + 1 + $i) % count($pool)];
+    foreach ($competitors as $c) {
         $rows[] = [
-            'rank' => $i + 2, 'hero' => false, 'name' => $name,
-            'letter' => mb_substr($name, 0, 1), 'color' => $colors[($start + $i) % count($colors)],
-            'rating' => max(3.5, round($heroRating - 0.15 * ($i + 1), 1)),
-            'downloads' => $downloadsPool[$i],
+            'is_this' => false, 'name' => $c['name'], 'icon' => $c['icon'],
+            'letter' => mb_substr($c['name'], 0, 1), 'color' => '#8b8f98',
+            'rating' => $c['rating'], 'url' => $c['source_url'],
         ];
     }
+    usort($rows, fn($x, $y) => $y['rating'] <=> $x['rating']);
 
     $h = '<section style="padding:40px 22px;border-top:1px solid var(--line,var(--border,rgba(128,128,128,.18)))">';
     $h .= '<div style="max-width:560px;margin:0 auto">';
     $h .= '<div style="text-align:center;margin-bottom:22px">';
-    $h .= '<div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:' . attr($a) . '">' . esc($L['category'] ?: 'Apps') . '</div>';
     $h .= '<h2 style="font-size:clamp(22px,3vw,30px);font-weight:800;letter-spacing:-.02em;margin:6px 0 6px;color:var(--text,#1a1a1a)">' . esc($S['rank_title']) . '</h2>';
-    $h .= '<p style="color:var(--muted,#777);font-size:14px;margin:0">' . esc($S['rank_sub']) . '</p>';
+    $h .= '<p style="color:var(--muted,#777);font-size:13px;margin:0">' . esc($S['rank_sub']) . '</p>';
     $h .= '</div>';
 
+    $rank = 1;
     foreach ($rows as $r) {
-        $hero = $r['hero'];
-        $box  = $hero
-            ? 'background:' . hex2rgba($a, .08) . ';border:1px solid ' . hex2rgba($a, .4) . ';box-shadow:0 0 0 1px ' . hex2rgba($a, .15) . ' inset'
+        $box = $r['is_this']
+            ? 'background:' . hex2rgba($a, .08) . ';border:1px solid ' . hex2rgba($a, .4)
             : 'border:1px solid var(--line,rgba(128,128,128,.16))';
+        $nameHtml = esc($r['name']);
         $h .= '<div style="display:flex;align-items:center;gap:14px;padding:13px 15px;border-radius:14px;margin-bottom:9px;' . $box . '">';
-        $h .= '<div style="font-weight:800;font-size:15px;color:' . ($hero ? attr($a) : 'var(--muted,#999)') . ';width:20px;text-align:center;flex-shrink:0">' . $r['rank'] . '</div>';
-        $h .= '<div style="width:38px;height:38px;border-radius:11px;display:grid;place-items:center;font-weight:800;font-size:15px;color:#06140c;background:' . attr($r['color']) . ';flex-shrink:0">' . esc($r['letter']) . '</div>';
+        $h .= '<div style="font-weight:800;font-size:15px;color:' . ($r['is_this'] ? attr($a) : 'var(--muted,#999)') . ';width:20px;text-align:center;flex-shrink:0">' . $rank . '</div>';
+        if (!empty($r['icon'])) {
+            $h .= '<img src="' . attr($r['icon']) . '" alt="" loading="lazy" style="width:38px;height:38px;border-radius:11px;object-fit:cover;flex-shrink:0">';
+        } else {
+            $h .= '<div style="width:38px;height:38px;border-radius:11px;display:grid;place-items:center;font-weight:800;font-size:15px;color:#06140c;background:' . attr($r['color']) . ';flex-shrink:0">' . esc($r['letter']) . '</div>';
+        }
         $h .= '<div style="flex:1;min-width:0">';
-        $h .= '<div style="font-weight:700;font-size:14.5px;color:var(--text,#1a1a1a);display:flex;align-items:center;gap:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' . esc($r['name']);
-        if ($hero) {
-            $h .= '<span style="display:inline-flex;align-items:center;gap:4px;background:' . hex2rgba($a, .16) . ';color:' . attr($a) . ';font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:999px;flex-shrink:0">' . svg_icon('star', 11) . esc($S['rank_pick']) . '</span>';
+        $h .= '<div style="font-weight:700;font-size:14.5px;color:var(--text,#1a1a1a);display:flex;align-items:center;gap:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">';
+        $h .= $r['url'] ? ('<a href="' . attr($r['url']) . '" target="_blank" rel="nofollow noopener" style="color:inherit;text-decoration:none">' . $nameHtml . '</a>') : $nameHtml;
+        if ($r['is_this']) {
+            $h .= '<span style="font-size:10.5px;font-weight:700;color:' . attr($a) . ';flex-shrink:0">— ' . esc($S['rank_pick']) . '</span>';
         }
         $h .= '</div>';
-        $h .= '<div style="font-size:12.5px;color:var(--muted,#888);margin-top:2px">' . esc(number_format($r['rating'], 1)) . ' ★ · ' . esc($r['downloads']) . ' ' . esc($S['downloads']) . '</div>';
+        $h .= '<div style="font-size:12.5px;color:var(--muted,#888);margin-top:2px">' . esc(number_format($r['rating'], 1)) . ' ★</div>';
         $h .= '</div></div>';
+        $rank++;
     }
     $h .= '</div></section>';
     return $h;
