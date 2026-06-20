@@ -23,7 +23,7 @@ function build_landing(array $form): array {
     $tpl = $reg[$tplKey];
 
     $warnings = [];
-    $lang     = in_array($form['lang'] ?? 'en', ['en', 'es', 'pt'], true) ? $form['lang'] : 'en';
+    $lang     = array_key_exists($form['lang'] ?? 'en', supported_langs()) ? $form['lang'] : 'en';
     $kclient  = !empty($form['kclient']);
     $localize = !isset($form['localize']) || $form['localize'];
     // Kclient is PHP — force .php output when it's on.
@@ -51,6 +51,7 @@ function build_landing(array $form): array {
         'cta_url'      => trim($form['cta_url'] ?? '#download') ?: '#download',
         'cta_text'     => trim($form['cta_text'] ?? ''),
         'lang'         => $lang,
+        'dir'          => in_array($lang, rtl_langs(), true) ? 'rtl' : 'ltr',
         'accent'       => preg_match('/^#[0-9a-f]{3,8}$/i', $form['accent'] ?? '') ? $form['accent'] : $tpl['accent'],
         'year'         => date('Y'),
         'icon'         => '',
@@ -119,6 +120,7 @@ function build_landing(array $form): array {
     ob_start();
     include $tplFile;          // template uses $L
     $html = ob_get_clean();
+    $html = apply_enhancements($html, $form, $L);   // SEO overrides + JSON-LD + trust band + cookie banner
 
     // --- Prepend Kclient include for the preloading method ---
     $indexName = 'index.' . $format;
@@ -275,4 +277,224 @@ function placeholder_screen(string $name, string $accent, int $n): string {
         . '<rect x="90" y="650" width="180" height="48" rx="24" fill="' . attr($accent) . '"/>'
         . '<text x="180" y="745" font-family="Arial" font-size="15" fill="#ffffff" opacity="0.5" text-anchor="middle">'
         . esc($name) . '</text></svg>';
+}
+
+/**
+ * Render a template to HTML for the LIVE PREVIEW (no file writes, no downloads).
+ * Uses the form's image URLs as-is; inlines SVG placeholders where empty.
+ */
+function render_preview(array $form): string {
+    $reg = template_registry();
+    $tplKey = isset($reg[$form['template']]) ? $form['template'] : 'spotlight';
+    $tpl = $reg[$tplKey];
+    $lang = array_key_exists($form['lang'] ?? 'en', supported_langs()) ? $form['lang'] : 'en';
+    $accent = preg_match('/^#[0-9a-f]{3,8}$/i', $form['accent'] ?? '') ? $form['accent'] : $tpl['accent'];
+
+    $icon = trim($form['icon'] ?? '');
+    if ($icon === '') {
+        $icon = 'data:image/svg+xml;base64,' . base64_encode(placeholder_icon($form['name'] ?? 'App', $accent));
+    }
+    $shots = array_values(array_filter(array_map('trim', (array)($form['screenshots'] ?? []))));
+    if (empty($shots)) {
+        for ($k = 1; $k <= 3; $k++) {
+            $shots[] = 'data:image/svg+xml;base64,' . base64_encode(placeholder_screen($form['name'] ?? 'App', $accent, $k));
+        }
+    }
+
+    $L = [
+        'name'         => trim($form['name'] ?? 'My App') ?: 'My App',
+        'tagline'      => trim($form['tagline'] ?? ''),
+        'description'  => trim($form['description'] ?? ''),
+        'developer'    => trim($form['developer'] ?? ''),
+        'category'     => trim($form['category'] ?? 'App') ?: 'App',
+        'rating'       => (float)($form['rating'] ?? 4.8),
+        'rating_count' => trim($form['rating_count'] ?? ''),
+        'downloads'    => trim($form['downloads'] ?? ''),
+        'cta_url'      => '#',
+        'cta_text'     => trim($form['cta_text'] ?? ''),
+        'lang'         => $lang,
+        'dir'          => in_array($lang, rtl_langs(), true) ? 'rtl' : 'ltr',
+        'accent'       => $accent,
+        'year'         => date('Y'),
+        'icon'         => $icon,
+        'screenshots'  => $shots,
+        'privacy_url'  => '#',
+        'terms_url'    => '#',
+        'S'            => lpf_strings($lang),
+        'reviews'      => sample_reviews($lang),
+    ];
+    if ($L['cta_text'] === '') $L['cta_text'] = $L['S']['get'];
+
+    $file = __DIR__ . '/../templates/' . $tpl['file'];
+    if (!is_file($file)) return '<p style="font-family:sans-serif;padding:40px">Template not found.</p>';
+    ob_start();
+    include $file;
+    return apply_enhancements(ob_get_clean(), $form, $L);
+}
+
+/* ============================================================
+ * Trust + SEO enhancements — injected into ANY template's HTML.
+ * ============================================================ */
+
+/** JSON-LD SoftwareApplication structured data (legitimacy signal for crawlers). */
+function jsonld_app(array $L): string {
+    $data = [
+        '@context' => 'https://schema.org',
+        '@type'    => 'SoftwareApplication',
+        'name'     => $L['name'],
+        'operatingSystem' => 'Android, iOS',
+        'applicationCategory' => ($L['category'] ?: 'MobileApplication'),
+        'offers'   => ['@type' => 'Offer', 'price' => '0', 'priceCurrency' => 'USD'],
+    ];
+    if (!empty($L['rating'])) {
+        $rc = (int)preg_replace('/\D/', '', (string)$L['rating_count']);
+        $data['aggregateRating'] = ['@type' => 'AggregateRating', 'ratingValue' => (string)$L['rating'], 'bestRating' => '5', 'ratingCount' => (string)max($rc, 1)];
+    }
+    if (!empty($L['icon']) && strpos($L['icon'], 'data:') !== 0) $data['image'] = $L['icon'];
+    if (!empty($L['description'])) $data['description'] = $L['description'];
+    if (!empty($L['developer']))  $data['author'] = ['@type' => 'Organization', 'name' => $L['developer']];
+    return '<script type="application/ld+json">' . json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . '</script>';
+}
+
+/** Trust band (badges + 18+/support/copyright). Adapts to the template theme via CSS vars. */
+function trust_band(array $L, array $form): string {
+    $S = $L['S']; $a = attr($L['accent']);
+    $support = trim($form['support_email'] ?? '');
+    $company = trim($form['company'] ?? '') ?: $L['name'];
+    $age = !empty($form['age18']);
+    $items = [['lock', $S['ssl']], ['shield', $S['verified_dev']], ['check', $S['free_safe']]];
+    $h  = '<section style="border-top:1px solid var(--line,var(--border,rgba(128,128,128,.18)));padding:30px 22px;text-align:center;font-family:inherit">';
+    $h .= '<div style="display:flex;gap:26px;justify-content:center;flex-wrap:wrap;max-width:760px;margin:0 auto 14px">';
+    foreach ($items as $it) {
+        $h .= '<span style="display:inline-flex;align-items:center;gap:7px;font-size:13.5px;color:var(--text,#222)">'
+            . '<span style="color:' . $a . ';display:inline-flex">' . svg_icon($it[0], 18) . '</span>' . esc($it[1]) . '</span>';
+    }
+    $h .= '</div>';
+    if ($age) $h .= '<div style="font-size:12.5px;color:var(--muted,#777);margin-bottom:8px">' . esc($S['age_note']) . '</div>';
+    $h .= '<div style="font-size:12.5px;color:var(--muted,#777)">© ' . esc($L['year']) . ' ' . esc($company);
+    if ($support !== '') $h .= ' · ' . esc($S['support']) . ': <a href="mailto:' . attr($support) . '" style="color:' . $a . '">' . esc($support) . '</a>';
+    $h .= '</div></section>';
+    return $h;
+}
+
+/** Dismissible cookie-consent banner (floating; works on light or dark pages). */
+function cookie_banner(array $L): string {
+    $S = $L['S']; $a = attr($L['accent']);
+    return '<div id="lpf-ckb" style="position:fixed;left:16px;right:16px;bottom:16px;z-index:99999;max-width:560px;margin:0 auto;'
+        . 'background:#15171c;color:#e9edf5;border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:14px 16px;'
+        . 'display:flex;gap:14px;align-items:center;justify-content:space-between;box-shadow:0 16px 40px rgba(0,0,0,.4);font-family:system-ui,sans-serif;font-size:13.5px">'
+        . '<span>' . esc($S['cookie_text']) . ' <a href="' . attr($L['privacy_url']) . '" style="color:' . $a . '">' . esc($S['privacy']) . '</a></span>'
+        . '<button type="button" onclick="var b=document.getElementById(\'lpf-ckb\');if(b)b.remove()" '
+        . 'style="background:' . $a . ';color:#06140c;border:0;border-radius:9px;padding:8px 16px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap">' . esc($S['cookie_ok']) . '</button></div>';
+}
+
+/** Apply SEO overrides + structured data + trust band + cookie banner to rendered HTML. */
+function apply_enhancements(string $html, array $form, array $L): string {
+    // --- SEO overrides (only when provided) ---
+    $title = trim($form['seo_title'] ?? '');
+    $desc  = trim($form['seo_desc'] ?? '');
+    $ogimg = trim($form['og_image'] ?? '');
+    if ($title !== '') {
+        $html = preg_replace('#<title>.*?</title>#is', '<title>' . esc($title) . '</title>', $html, 1);
+        $html = preg_replace('#(<meta property="og:title" content=")[^"]*(">)#i', '${1}' . attr($title) . '${2}', $html, 1);
+    }
+    if ($desc !== '') {
+        $html = preg_replace('#(<meta name="description" content=")[^"]*(">)#i', '${1}' . attr($desc) . '${2}', $html, 1);
+        $html = preg_replace('#(<meta property="og:description" content=")[^"]*(">)#i', '${1}' . attr($desc) . '${2}', $html, 1);
+    }
+    if ($ogimg !== '') {
+        $html = preg_replace('#(<meta property="og:image" content=")[^"]*(">)#i', '${1}' . attr($ogimg) . '${2}', $html, 1);
+    }
+
+    // --- structured data (always) ---
+    $html = str_replace('</head>', jsonld_app($L) . "\n</head>", $html);
+
+    // --- "top ranked apps" leaderboard (before footer if present, else before </body>) ---
+    if (!isset($form['show_ranking']) || $form['show_ranking']) {
+        $rank = ranking_section($L);
+        $pos = stripos($html, '<footer');
+        $html = ($pos !== false) ? substr($html, 0, $pos) . $rank . substr($html, $pos)
+                                 : str_replace('</body>', $rank . '</body>', $html);
+    }
+
+    // --- trust band (before footer if present, else before </body>) ---
+    if (!empty($form['trust_badges'])) {
+        $band = trust_band($L, $form);
+        $pos = stripos($html, '<footer');
+        $html = ($pos !== false) ? substr($html, 0, $pos) . $band . substr($html, $pos)
+                                 : str_replace('</body>', $band . '</body>', $html);
+    }
+
+    // --- cookie banner ---
+    if (!empty($form['cookie_banner'])) {
+        $html = str_replace('</body>', cookie_banner($L) . '</body>', $html);
+    }
+    return $html;
+}
+
+/** "#36d07c" + alpha -> "rgba(54,208,124,.18)" */
+function hex2rgba(string $hex, float $alpha): string {
+    $hex = ltrim($hex, '#');
+    if (strlen($hex) === 3) $hex = $hex[0].$hex[0].$hex[1].$hex[1].$hex[2].$hex[2];
+    if (strlen($hex) < 6) return 'rgba(54,208,124,' . $alpha . ')';
+    [$r, $g, $b] = [hexdec(substr($hex,0,2)), hexdec(substr($hex,2,2)), hexdec(substr($hex,4,2))];
+    return "rgba($r,$g,$b,$alpha)";
+}
+
+/**
+ * "Top ranked apps" leaderboard — the generated app at #1, plus 4 generic
+ * filler competitors (no real app names) for social-proof / "best of" framing.
+ */
+function ranking_section(array $L): string {
+    $S = $L['S']; $a = $L['accent'];
+    $pool   = ['Nova','Pulse','Vortex','Byte','Drift','Halo','Crisp','Flux','Orbit','Snap','Verve','Quartz'];
+    $colors = ['#64b8ff','#a15bff','#49e0c4','#f7c625','#ff9357','#ff7da3'];
+    $seed   = crc32($L['name'] ?: 'app');
+    $start  = $seed % count($pool);
+    $downloadsPool = ['820K+', '540K+', '310K+', '180K+'];
+    $heroRating = (float)$L['rating'];
+
+    $rows = [];
+    $rows[] = [
+        'rank' => 1, 'hero' => true, 'name' => $L['name'],
+        'letter' => mb_substr($L['name'] ?: 'A', 0, 1), 'color' => $a,
+        'rating' => $heroRating, 'downloads' => $L['downloads'] ?: $downloadsPool[0],
+    ];
+    for ($i = 0; $i < 4; $i++) {
+        $name = $pool[($start + 1 + $i) % count($pool)];
+        $rows[] = [
+            'rank' => $i + 2, 'hero' => false, 'name' => $name,
+            'letter' => mb_substr($name, 0, 1), 'color' => $colors[($start + $i) % count($colors)],
+            'rating' => max(3.5, round($heroRating - 0.15 * ($i + 1), 1)),
+            'downloads' => $downloadsPool[$i],
+        ];
+    }
+
+    $h = '<section style="padding:40px 22px;border-top:1px solid var(--line,var(--border,rgba(128,128,128,.18)))">';
+    $h .= '<div style="max-width:560px;margin:0 auto">';
+    $h .= '<div style="text-align:center;margin-bottom:22px">';
+    $h .= '<div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:' . attr($a) . '">' . esc($L['category'] ?: 'Apps') . '</div>';
+    $h .= '<h2 style="font-size:clamp(22px,3vw,30px);font-weight:800;letter-spacing:-.02em;margin:6px 0 6px;color:var(--text,#1a1a1a)">' . esc($S['rank_title']) . '</h2>';
+    $h .= '<p style="color:var(--muted,#777);font-size:14px;margin:0">' . esc($S['rank_sub']) . '</p>';
+    $h .= '</div>';
+
+    foreach ($rows as $r) {
+        $hero = $r['hero'];
+        $box  = $hero
+            ? 'background:' . hex2rgba($a, .08) . ';border:1px solid ' . hex2rgba($a, .4) . ';box-shadow:0 0 0 1px ' . hex2rgba($a, .15) . ' inset'
+            : 'border:1px solid var(--line,rgba(128,128,128,.16))';
+        $h .= '<div style="display:flex;align-items:center;gap:14px;padding:13px 15px;border-radius:14px;margin-bottom:9px;' . $box . '">';
+        $h .= '<div style="font-weight:800;font-size:15px;color:' . ($hero ? attr($a) : 'var(--muted,#999)') . ';width:20px;text-align:center;flex-shrink:0">' . $r['rank'] . '</div>';
+        $h .= '<div style="width:38px;height:38px;border-radius:11px;display:grid;place-items:center;font-weight:800;font-size:15px;color:#06140c;background:' . attr($r['color']) . ';flex-shrink:0">' . esc($r['letter']) . '</div>';
+        $h .= '<div style="flex:1;min-width:0">';
+        $h .= '<div style="font-weight:700;font-size:14.5px;color:var(--text,#1a1a1a);display:flex;align-items:center;gap:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' . esc($r['name']);
+        if ($hero) {
+            $h .= '<span style="display:inline-flex;align-items:center;gap:4px;background:' . hex2rgba($a, .16) . ';color:' . attr($a) . ';font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:999px;flex-shrink:0">' . svg_icon('star', 11) . esc($S['rank_pick']) . '</span>';
+        }
+        $h .= '</div>';
+        $h .= '<div style="font-size:12.5px;color:var(--muted,#888);margin-top:2px">' . esc(number_format($r['rating'], 1)) . ' ★ · ' . esc($r['downloads']) . ' ' . esc($S['downloads']) . '</div>';
+        $h .= '</div></div>';
+    }
+    $h .= '</div></section>';
+    return $h;
 }

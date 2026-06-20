@@ -10,7 +10,7 @@ $faq = [
   [$S['rating'].'?', number_format($L['rating'],1).' / 5 · '.$L['rating_count'].' '.$S['reviews']],
 ];
 ?><!DOCTYPE html>
-<html lang="<?= attr($L['lang']) ?>">
+<html lang="<?= attr($L['lang']) ?>" dir="<?= attr($L['dir'] ?? 'ltr') ?>">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">

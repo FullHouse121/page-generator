@@ -5,7 +5,7 @@ $S = $L['S'];
 $accent = attr($L['accent']);
 $shots = $L['screenshots'];
 ?><!DOCTYPE html>
-<html lang="<?= attr($L['lang']) ?>">
+<html lang="<?= attr($L['lang']) ?>" dir="<?= attr($L['dir'] ?? 'ltr') ?>">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">

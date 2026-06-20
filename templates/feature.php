@@ -9,7 +9,7 @@ $shots = $L['screenshots'];
 $blockCopy = feature_points($S);
 if ($L['tagline']) { $blockCopy[0][2] = $L['tagline']; }
 ?><!DOCTYPE html>
-<html lang="<?= attr($L['lang']) ?>">
+<html lang="<?= attr($L['lang']) ?>" dir="<?= attr($L['dir'] ?? 'ltr') ?>">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">

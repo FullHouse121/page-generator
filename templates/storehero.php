@@ -6,7 +6,7 @@ $accent = attr($L['accent']);
 $shots = $L['screenshots'];
 $rc = (int)preg_replace('/\D/','',$L['rating_count']) ?: 12480;
 ?><!DOCTYPE html>
-<html lang="<?= attr($L['lang']) ?>">
+<html lang="<?= attr($L['lang']) ?>" dir="<?= attr($L['dir'] ?? 'ltr') ?>">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
