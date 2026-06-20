@@ -36,6 +36,24 @@ function template_registry(): array {
             'accent'=> '#ff5a5f',
             'desc'  => 'Dark, large type, glow, store badges, FAQ accordion.',
         ],
+        'playstore' => [
+            'name'  => 'Play Store',
+            'file'  => 'playstore.php',
+            'accent'=> '#00b27a',
+            'desc'  => 'Authentic Google Play listing — install bar, data safety, rating bars.',
+        ],
+        'aurora' => [
+            'name'  => 'Aurora',
+            'file'  => 'aurora.php',
+            'accent'=> '#a15bff',
+            'desc'  => 'Premium glassmorphism, aurora gradient hero, glass cards.',
+        ],
+        'editorial' => [
+            'name'  => 'Editorial',
+            'file'  => 'editorial.php',
+            'accent'=> '#16181d',
+            'desc'  => 'Clean light, magazine big-type, large screenshots.',
+        ],
     ];
 }
 

@@ -18,7 +18,7 @@ tool only builds the landing and the integration hook.
 > PHP host (your Keitaro server already runs PHP) and open `index.php` there. To run locally
 > instead, install Homebrew first (https://brew.sh), then `brew install php`.
 >
-> The code was verified end-to-end on PHP 8.3 via a WASM runtime — all 5 templates render and
+> The code was verified end-to-end on PHP 8.3 via a WASM runtime — all 8 templates render and
 > all output branches (zip, Kclient include, `.php`/`.html`, placeholders) pass.
 
 ## Run the generator
@@ -57,12 +57,12 @@ folder to your white domain (a PHP host, since the page may include `kclient.php
 
 1. **Drop the link** — Google Play / App Store / any URL. It auto-reads name, icon,
    screenshots and rating where possible.
-2. **Edit** — fix any field, pick one of the 5 templates, choose language (EN/ES/PT),
+2. **Edit** — fix any field, pick one of the 8 templates, choose language (EN/ES/PT),
    accent color, output format (`.php` or `.html`), and whether to include Kclient.
 3. **Generate** — writes `output/<app>-<template>/` and a `.zip`. Preview in-browser,
    then upload the folder to your white domain.
 
-## The 5 templates
+## The 8 templates
 
 | Key        | Name        | Look |
 |------------|-------------|------|
@@ -71,6 +71,14 @@ folder to your white domain (a PHP host, since the page may include `kclient.php
 | `storehero`| Store Hero  | Mimics an app-store listing: install bar, rating breakdown |
 | `feature`  | Feature Flow| Dark, alternating feature blocks, stats, sticky CTA |
 | `bold`     | Bold Dark   | Big type, glow, store badges, FAQ accordion |
+| `playstore`| Play Store  | Authentic Google Play listing — install bar, data safety, rating bars |
+| `aurora`   | Aurora      | Premium glassmorphism, aurora gradient hero, glass cards |
+| `editorial`| Editorial   | Clean light, magazine big-type, large screenshots |
+
+The generator UI uses the **DEUS** design system (Sora, `#36d07c`, dark grid + glow panels).
+Every template is performance-tuned: preloaded/eager hero image, lazy-loaded gallery,
+`aspect-ratio` to prevent layout shift, inline CSS + inline SVG icons (no external requests),
+and a per-landing `.htaccess` (gzip + browser caching).
 
 Each generated page is **self-contained** (inline CSS, inline SVG icons, local assets)
 and ships with `privacy.html`, `terms.html`, and `robots.txt` — the legal pages help with
@@ -105,7 +113,7 @@ white-lp-factory/
 │  ├─ templates.php     # template registry + render helpers (icons, stars)
 │  ├─ legal.php         # privacy / terms generator (EN/ES/PT)
 │  └─ helpers.php       # http, zip, escaping, slugs
-├─ templates/           # the 5 layouts
+├─ templates/           # the 8 layouts
 ├─ kclient/             # Kclient reference + instructions
 └─ output/             # generated landings land here (gitignored)
 ```
