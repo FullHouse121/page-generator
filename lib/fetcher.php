@@ -107,15 +107,18 @@ function parse_apple(string $html, array &$data): void {
                 $shots = is_array($node['screenshot']) ? $node['screenshot'] : [$node['screenshot']];
                 foreach ($shots as $s) {
                     $u = is_array($s) ? ($s['contentUrl'] ?? $s['url'] ?? '') : $s;
-                    if ($u) $data['screenshots'][] = $u;
+                    if ($u && stripos($u, 'placeholder') === false) $data['screenshots'][] = $u;
                 }
             }
         }
     }
-    // Fallback screenshots: Apple serves mzstatic image URLs
+    // Fallback screenshots: Apple serves mzstatic image URLs. Apple also reuses a
+    // generic "Placeholder.mill" filler graphic for screenshot slots an app hasn't
+    // filled in — the same asset across many unrelated apps — so exclude it.
     if (empty($data['screenshots'])) {
         if (preg_match_all('#https://[a-z0-9.\-]*mzstatic\.com/[^"\\\\\s]+?\.(?:png|jpg|jpeg|webp)#i', $html, $m)) {
-            $data['screenshots'] = collect_shots($m[0], $data['icon']);
+            $real = array_values(array_filter($m[0], fn($u) => stripos($u, 'placeholder') === false));
+            $data['screenshots'] = collect_shots($real, $data['icon']);
         }
     }
 }
@@ -128,8 +131,15 @@ function parse_google(string $html, array &$data): void {
     if (preg_match('#"name":"([^"]+)","url":"https://play.google.com/store/apps/dev#i', $html, $m)) {
         $data['developer'] = json_decode('"' . $m[1] . '"');
     }
-    // Rating value e.g. 4.6
-    if (preg_match('#\[\[\["?([0-5]\.[0-9])"?\]#', $html, $m)) {
+    // Rating value — Google embeds a schema.org AggregateRating block (most reliable,
+    // current page structure as of this writing); older array-index / "Rated X stars"
+    // patterns kept as fallback in case Google reverts or A/B-tests the markup.
+    if (preg_match('#"aggregateRating"\s*:\s*\{[^}]*?"ratingValue"\s*:\s*"?([0-5](?:\.[0-9]+)?)"?#i', $html, $m)) {
+        $data['rating'] = (string)round((float)$m[1], 1); $data['_rating_real'] = true;
+        if (preg_match('#"aggregateRating"\s*:\s*\{[^}]*?"ratingCount"\s*:\s*"?([0-9]+)"?#i', $html, $rc)) {
+            $data['rating_count'] = number_format((int)$rc[1]);
+        }
+    } elseif (preg_match('#\[\[\["?([0-5]\.[0-9])"?\]#', $html, $m)) {
         $data['rating'] = $m[1]; $data['_rating_real'] = true;
     } elseif (preg_match('#Rated ([0-5](?:\.[0-9])?) stars#i', $html, $m)) {
         $data['rating'] = $m[1]; $data['_rating_real'] = true;
