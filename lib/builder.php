@@ -87,11 +87,22 @@ function build_landing(array $form): array {
         if ($localize && preg_match('#^https?://#i', $s)) {
             $dest = $dir . '/assets/shot' . $i . '.' . img_ext($s);
             if (download_file($s, $dest)) {
-                $L['screenshots'][] = 'assets/' . basename($dest);
+                // Check the actual downloaded bytes (reliable — no extra network
+                // round-trip, no CDN/UA inconsistency). Square/landscape almost
+                // always means the icon slipped in as a "screenshot", not a real one.
+                if (image_is_tall($dest) === false) {
+                    @unlink($dest);
+                } else {
+                    $L['screenshots'][] = 'assets/' . basename($dest);
+                }
             } else {
                 $L['screenshots'][] = $s;
             }
         } else {
+            // Hotlinked (not downloaded) — can't reliably probe dimensions: Google's
+            // image CDN serves a degraded fallback to server-side requests that
+            // differs from what a real browser loads, so a remote check here would
+            // measure the wrong thing. Trust it as-is, same as before.
             $L['screenshots'][] = $s;
         }
         $i++;
@@ -264,20 +275,107 @@ function placeholder_icon(string $name, string $accent): string {
         . 'fill="#fff" text-anchor="middle" dominant-baseline="middle">' . esc($L) . '</text></svg>';
 }
 
-/** Neutral phone-screen placeholder (SVG). */
+/**
+ * Neutral phone-screen placeholder (SVG) — a believable abstract app-UI mockup
+ * rather than a generic gradient block. Three rotating layouts (dashboard,
+ * feed, profile) so a 3-shot gallery doesn't repeat the same screen.
+ */
 function placeholder_screen(string $name, string $accent, int $n): string {
-    $tones = ['#0b0b14', '#141422', '#1b1430'];
-    $bg = $tones[($n - 1) % 3];
-    return '<svg xmlns="http://www.w3.org/2000/svg" width="360" height="780" viewBox="0 0 360 780">'
-        . '<rect width="360" height="780" fill="' . $bg . '"/>'
-        . '<circle cx="180" cy="150" r="46" fill="' . attr($accent) . '" opacity="0.9"/>'
-        . '<rect x="70" y="230" width="220" height="22" rx="11" fill="#ffffff" opacity="0.85"/>'
-        . '<rect x="100" y="266" width="160" height="14" rx="7" fill="#ffffff" opacity="0.4"/>'
-        . '<rect x="40" y="340" width="280" height="120" rx="18" fill="#ffffff" opacity="0.06"/>'
-        . '<rect x="40" y="476" width="280" height="120" rx="18" fill="#ffffff" opacity="0.06"/>'
-        . '<rect x="90" y="650" width="180" height="48" rx="24" fill="' . attr($accent) . '"/>'
-        . '<text x="180" y="745" font-family="Arial" font-size="15" fill="#ffffff" opacity="0.5" text-anchor="middle">'
-        . esc($name) . '</text></svg>';
+    $a = attr($accent);
+    $letter = esc(strtoupper(mb_substr(trim($name) ?: 'A', 0, 1)));
+    $variant = (($n - 1) % 3) + 1;
+
+    $svg  = '<svg xmlns="http://www.w3.org/2000/svg" width="360" height="780" viewBox="0 0 360 780">';
+    $svg .= '<rect width="360" height="780" fill="#f5f6fa"/>';
+    $svg .= match ($variant) {
+        2 => placeholder_screen_feed($a, $letter),
+        3 => placeholder_screen_profile($a, $letter),
+        default => placeholder_screen_dashboard($a, $letter),
+    };
+    $svg .= placeholder_screen_navbar($a);
+    $svg .= '</svg>';
+    return $svg;
+}
+
+/** Shared top bar: lettermark avatar + two title bars + a meatball menu glyph. */
+function placeholder_screen_topbar(string $a, string $letter): string {
+    return '<circle cx="46" cy="56" r="20" fill="' . $a . '"/>'
+        . '<text x="46" y="63" font-family="Arial,Helvetica,sans-serif" font-size="18" font-weight="800" fill="#fff" text-anchor="middle">' . $letter . '</text>'
+        . '<rect x="80" y="46" width="120" height="11" rx="5.5" fill="#d7d9e2"/>'
+        . '<rect x="80" y="64" width="80" height="8" rx="4" fill="#e6e7ee"/>'
+        . '<rect x="313" y="50" width="14" height="3" rx="1.5" fill="#c7c9d4"/>'
+        . '<rect x="313" y="56" width="14" height="3" rx="1.5" fill="#c7c9d4"/>'
+        . '<rect x="313" y="62" width="14" height="3" rx="1.5" fill="#c7c9d4"/>';
+}
+
+/** Shared bottom tab bar: 4 generic nav icons, first one active/accent. */
+function placeholder_screen_navbar(string $a): string {
+    $svg = '<rect x="0" y="712" width="360" height="68" fill="#ffffff"/><rect x="0" y="712" width="360" height="1" fill="#e8e9ee"/>';
+    foreach ([60, 140, 220, 300] as $i => $cx) {
+        $active = $i === 0;
+        $svg .= '<rect x="' . ($cx - 10) . '" y="736" width="20" height="20" rx="6" fill="' . ($active ? $a : '#c7c9d4') . '" opacity="' . ($active ? '1' : '.55') . '"/>';
+        if ($active) $svg .= '<circle cx="' . $cx . '" cy="770" r="2.5" fill="' . $a . '"/>';
+    }
+    return $svg;
+}
+
+/** Variant 1: dashboard — search pill, hero banner, 2x2 tile grid. */
+function placeholder_screen_dashboard(string $a, string $letter): string {
+    $svg = placeholder_screen_topbar($a, $letter);
+    $svg .= '<rect x="24" y="96" width="312" height="44" rx="22" fill="#ffffff" stroke="#e7e8ee"/>'
+        . '<circle cx="46" cy="118" r="6" fill="none" stroke="#c7c9d4" stroke-width="2"/>'
+        . '<line x1="50" y1="122" x2="54" y2="126" stroke="#c7c9d4" stroke-width="2" stroke-linecap="round"/>';
+    $svg .= '<rect x="24" y="160" width="312" height="150" rx="20" fill="' . $a . '"/>'
+        . '<rect x="44" y="190" width="140" height="14" rx="7" fill="#ffffff" opacity=".92"/>'
+        . '<rect x="44" y="214" width="180" height="9" rx="4.5" fill="#ffffff" opacity=".6"/>'
+        . '<rect x="44" y="260" width="100" height="30" rx="15" fill="#ffffff"/>';
+    $svg .= '<rect x="24" y="336" width="110" height="11" rx="5.5" fill="#d7d9e2"/>';
+    foreach ([[24, 362], [174, 362], [24, 470], [174, 470]] as $t) {
+        [$tx, $ty] = $t;
+        $svg .= '<rect x="' . $tx . '" y="' . $ty . '" width="138" height="96" rx="18" fill="#ffffff" stroke="#e7e8ee"/>'
+            . '<circle cx="' . ($tx + 24) . '" cy="' . ($ty + 24) . '" r="14" fill="' . $a . '" opacity=".16"/>'
+            . '<circle cx="' . ($tx + 24) . '" cy="' . ($ty + 24) . '" r="6" fill="' . $a . '"/>'
+            . '<rect x="' . ($tx + 14) . '" y="' . ($ty + 58) . '" width="90" height="8" rx="4" fill="#d7d9e2"/>'
+            . '<rect x="' . ($tx + 14) . '" y="' . ($ty + 74) . '" width="54" height="7" rx="3.5" fill="#e6e7ee"/>';
+    }
+    return $svg;
+}
+
+/** Variant 2: feed — four list rows with avatar + two text lines. */
+function placeholder_screen_feed(string $a, string $letter): string {
+    $svg = placeholder_screen_topbar($a, $letter);
+    foreach ([110, 216, 322, 428] as $i => $y) {
+        $op = ($i % 2 === 0) ? '1' : '.65';
+        $svg .= '<rect x="24" y="' . $y . '" width="312" height="92" rx="18" fill="#ffffff" stroke="#e7e8ee"/>'
+            . '<circle cx="72" cy="' . ($y + 46) . '" r="24" fill="' . $a . '" opacity="' . $op . '"/>'
+            . '<rect x="112" y="' . ($y + 30) . '" width="150" height="11" rx="5.5" fill="#d7d9e2"/>'
+            . '<rect x="112" y="' . ($y + 50) . '" width="110" height="8" rx="4" fill="#e6e7ee"/>'
+            . '<rect x="312" y="' . ($y + 38) . '" width="8" height="16" rx="4" fill="#e6e7ee"/>';
+    }
+    return $svg;
+}
+
+/** Variant 3: profile — big avatar, stat row, two detail cards, CTA pill. */
+function placeholder_screen_profile(string $a, string $letter): string {
+    $svg = '<circle cx="180" cy="130" r="58" fill="#ffffff"/>'
+        . '<circle cx="180" cy="130" r="52" fill="' . $a . '"/>'
+        . '<text x="180" y="142" font-family="Arial,Helvetica,sans-serif" font-size="40" font-weight="800" fill="#fff" text-anchor="middle">' . $letter . '</text>'
+        . '<rect x="110" y="200" width="140" height="14" rx="7" fill="#d7d9e2"/>'
+        . '<rect x="135" y="222" width="90" height="9" rx="4.5" fill="#e6e7ee"/>';
+    foreach ([90, 180, 270] as $cx) {
+        $svg .= '<rect x="' . ($cx - 23) . '" y="270" width="46" height="16" rx="6" fill="' . $a . '" opacity=".18"/>'
+            . '<rect x="' . ($cx - 26) . '" y="292" width="52" height="7" rx="3.5" fill="#e6e7ee"/>';
+    }
+    $svg .= '<rect x="24" y="326" width="312" height="1" fill="#e8e9ee"/>';
+    foreach ([350, 430] as $y) {
+        $svg .= '<rect x="24" y="' . $y . '" width="312" height="70" rx="16" fill="#ffffff" stroke="#e7e8ee"/>'
+            . '<rect x="24" y="' . $y . '" width="4" height="70" rx="2" fill="' . $a . '"/>'
+            . '<rect x="48" y="' . ($y + 22) . '" width="200" height="10" rx="5" fill="#d7d9e2"/>'
+            . '<rect x="48" y="' . ($y + 40) . '" width="140" height="8" rx="4" fill="#e6e7ee"/>';
+    }
+    $svg .= '<rect x="70" y="520" width="220" height="48" rx="24" fill="' . $a . '"/>'
+        . '<polygon points="170,536 170,552 182,544" fill="#ffffff"/>';
+    return $svg;
 }
 
 /**

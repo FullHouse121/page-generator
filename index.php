@@ -146,6 +146,7 @@ label.tpl input{display:none}
 code{background:var(--panel-deep);border:1px solid var(--line);border-radius:6px;padding:1px 6px;font-size:.9em;color:var(--muted-strong)}
 footer{color:var(--muted);font-size:12.5px;text-align:center;padding:30px 0;position:relative;z-index:1}
 @media(max-width:780px){.tpls{grid-template-columns:repeat(2,1fr)}.row,.row3,.opts{grid-template-columns:1fr}}
+@media(max-width:460px){.tpls{grid-template-columns:1fr}.card{padding:18px}.wrap{padding:0 16px}.brand img{height:34px}.brand .tool{font-size:12px;padding-left:11px}}
 </style>
 </head>
 <body>
@@ -240,8 +241,8 @@ elseif ($action === 'fetch'):
   <div class="card">
     <h2 style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">Live preview
       <span style="display:flex;gap:8px">
-        <button type="button" class="btn sec" style="padding:7px 13px;font-size:12.5px" onclick="lpDevice('mobile')">Mobile</button>
-        <button type="button" class="btn sec" style="padding:7px 13px;font-size:12.5px" onclick="lpDevice('desktop')">Desktop</button>
+        <button type="button" id="lpBtnMobile" class="btn" style="padding:7px 13px;font-size:12.5px" onclick="lpDevice('mobile')">Mobile</button>
+        <button type="button" id="lpBtnDesktop" class="btn sec" style="padding:7px 13px;font-size:12.5px" onclick="lpDevice('desktop')">Desktop</button>
         <button type="button" class="btn" style="padding:7px 13px;font-size:12.5px" onclick="lpPreview()">↻ Refresh</button>
       </span>
     </h2>
@@ -397,7 +398,11 @@ else: ?>
     try{var fd=new FormData(form);fd.set('action','preview');
       fetch('index.php',{method:'POST',body:fd}).then(function(r){return r.text();}).then(function(h){fr.srcdoc=h;}).catch(function(){});}catch(e){}
   };
-  window.lpDevice=function(d){fr.style.width=(d==='mobile')?'390px':'100%';};
+  window.lpDevice=function(d){
+    fr.style.width=(d==='mobile')?'390px':'100%';
+    var mb=document.getElementById('lpBtnMobile'), db=document.getElementById('lpBtnDesktop');
+    if(mb&&db){ mb.className = (d==='mobile') ? 'btn' : 'btn sec'; db.className = (d==='desktop') ? 'btn' : 'btn sec'; }
+  };
   form.addEventListener('input',function(){clearTimeout(t);t=setTimeout(window.lpPreview,500);});
   form.addEventListener('change',function(){clearTimeout(t);t=setTimeout(window.lpPreview,250);});
   window.lpPreview();

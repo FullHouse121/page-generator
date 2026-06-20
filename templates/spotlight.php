@@ -50,7 +50,7 @@ h1{font-size:clamp(34px,5vw,52px);line-height:1.05;letter-spacing:-.02em;margin:
 .proof b{font-size:22px}.proof span{color:var(--muted);font-size:13px}
 .lpf-stars svg{margin-right:1px}
 /* phone */
-.phone{position:relative;margin:0 auto;width:280px;height:570px;background:#05060c;border-radius:42px;
+.phone{position:relative;margin:0 auto;width:min(280px,72vw);aspect-ratio:280/570;background:#05060c;border-radius:42px;
   border:10px solid #1d2030;box-shadow:0 40px 80px -30px rgba(0,0,0,.8);overflow:hidden}
 .phone::before{content:"";position:absolute;top:14px;left:50%;transform:translateX(-50%);width:110px;height:24px;background:#05060c;border-radius:0 0 16px 16px;z-index:2}
 .phone img{width:100%;height:100%;object-fit:cover}

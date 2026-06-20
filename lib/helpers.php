@@ -129,6 +129,33 @@ function img_ext(string $url): string {
     return in_array($ext, ['png', 'jpg', 'jpeg', 'webp', 'gif', 'svg'], true) ? $ext : 'jpg';
 }
 
+/**
+ * Is this image tall enough to be a real phone screenshot, as opposed to a
+ * square/landscape app icon that slipped in through scraping? A square icon
+ * stretched full-bleed with object-fit:cover in a phone mockup crops into an
+ * ugly blown-up logo. Returns null (benefit of the doubt) when dimensions
+ * can't be read, rather than rejecting on a network hiccup.
+ *
+ * Only call this on a LOCAL file you already downloaded yourself. Calling it
+ * on a remote URL is unreliable for some CDNs (confirmed on Google Play's
+ * play-lh.googleusercontent.com): they serve a small degraded fallback image
+ * to non-browser requests, which measures differently than what a real
+ * browser actually loads — so a remote probe here can reject a perfectly
+ * fine hotlinked screenshot, or pass a bad one, based on the wrong bytes.
+ */
+function image_is_tall($pathOrUrl): ?bool {
+    // Remote URLs go through curl (http_get), same as the rest of the fetcher —
+    // getimagesize() on a bare URL needs allow_url_fopen, which many hosts disable.
+    if (preg_match('#^https?://#i', $pathOrUrl)) {
+        $bytes = http_get($pathOrUrl, 10);
+        $dims = $bytes !== '' ? @getimagesizefromstring($bytes) : false;
+    } else {
+        $dims = @getimagesize($pathOrUrl);
+    }
+    if (!$dims || empty($dims[0]) || empty($dims[1])) return null;
+    return ($dims[0] / $dims[1]) <= 0.85;
+}
+
 /* ----------------------------------------------------------------
  * HTML parsing (best-effort, regex based)
  * ---------------------------------------------------------------- */

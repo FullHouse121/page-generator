@@ -42,7 +42,7 @@ nav .inner{display:flex;align-items:center;justify-content:space-between;height:
 .proof{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:40px}
 .proof .p{padding:16px 22px;border-radius:16px;text-align:center;min-width:120px}
 .proof b{font-size:22px;display:block}.proof span{color:var(--muted);font-size:12.5px}
-.phone{margin:54px auto 0;width:280px;height:570px;border-radius:42px;padding:10px;position:relative}
+.phone{margin:54px auto 0;width:min(280px,72vw);aspect-ratio:280/570;border-radius:42px;padding:10px;position:relative}
 .phone::after{content:"";position:absolute;inset:-30px;border-radius:60px;background:radial-gradient(closest-side,var(--accent),transparent);opacity:.25;filter:blur(40px);z-index:-1}
 .phone img{width:100%;height:100%;object-fit:cover;border-radius:32px}
 section{padding:68px 0}
