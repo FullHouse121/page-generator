@@ -60,7 +60,7 @@ function build_landing(array $form): array {
         'privacy_url'  => 'privacy.html',
         'terms_url'    => 'terms.html',
         'S'            => lpf_strings($lang),
-        'reviews'      => sample_reviews($lang),
+        'reviews'      => fetch_real_reviews(trim($form['source_url'] ?? '')),
     ];
     if ($L['cta_text'] === '') $L['cta_text'] = $L['S']['get'];
 
@@ -322,7 +322,7 @@ function render_preview(array $form): string {
         'privacy_url'  => '#',
         'terms_url'    => '#',
         'S'            => lpf_strings($lang),
-        'reviews'      => sample_reviews($lang),
+        'reviews'      => fetch_real_reviews(trim($form['source_url'] ?? '')),
     ];
     if ($L['cta_text'] === '') $L['cta_text'] = $L['S']['get'];
 

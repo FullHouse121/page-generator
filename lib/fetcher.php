@@ -164,3 +164,38 @@ function collect_shots(array $urls, string $icon): array {
     }
     return $out;
 }
+
+/**
+ * Real user reviews — Apple's public Customer Reviews RSS feed (documented,
+ * no auth needed: itunes.apple.com/.../rss/customerreviews/...). Google Play
+ * has no equivalent public API, so this returns [] for Google/generic links
+ * rather than fabricating anything.
+ */
+function fetch_real_reviews(string $url, int $limit = 5): array {
+    $url = trim($url);
+    if ($url === '' || detect_store($url) !== 'apple') return [];
+
+    if (!preg_match('#/id(\d+)#', $url, $m)) return [];
+    $appId = $m[1];
+    $cc = 'us';
+    if (preg_match('#apps\.apple\.com/([a-z]{2})/#i', $url, $cm)) $cc = strtolower($cm[1]);
+
+    $feedUrl = "https://itunes.apple.com/{$cc}/rss/customerreviews/id={$appId}/sortby=mostrecent/json";
+    $json = http_get($feedUrl, 10);
+    if ($json === '') return [];
+    $data = json_decode($json, true);
+    $entries = $data['feed']['entry'] ?? [];
+    if (!is_array($entries)) return [];
+
+    $out = [];
+    foreach ($entries as $e) {
+        // The feed's first entry is sometimes the app summary, not a review — it has no author/rating.
+        $author = $e['author']['name']['label'] ?? '';
+        $rating = $e['im:rating']['label'] ?? '';
+        $content = $e['content']['label'] ?? '';
+        if ($author === '' || $rating === '' || $content === '') continue;
+        $out[] = [trim($author), (int)$rating, trim(mb_substr($content, 0, 220))];
+        if (count($out) >= $limit) break;
+    }
+    return $out;
+}

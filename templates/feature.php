@@ -99,6 +99,7 @@ footer a{margin-left:18px}footer a:hover{color:var(--text)}
   </section>
   <?php endforeach; ?>
 
+  <?php if(!empty($L['reviews'])): ?>
   <section style="padding:56px 0;border-top:1px solid var(--line)">
     <h2 style="font-size:clamp(24px,3vw,32px);letter-spacing:-.02em;margin-bottom:6px"><?= esc($S['reviews']) ?></h2>
     <div class="tcards">
@@ -109,6 +110,7 @@ footer a{margin-left:18px}footer a:hover{color:var(--text)}
       <?php endforeach; ?>
     </div>
   </section>
+  <?php endif; ?>
 </div>
 
 <footer><div class="wrap">

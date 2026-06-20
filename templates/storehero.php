@@ -109,17 +109,12 @@ footer a{margin-left:16px}footer a:hover{color:var(--text)}
     <h2><?= esc($S['reviews']) ?></h2>
     <div class="ratewrap">
       <div class="bignum"><div class="n"><?= esc(number_format($L['rating'],1)) ?></div><?= stars_svg($L['rating'],$accent,15) ?><div class="muted"><?= number_format($rc) ?></div></div>
-      <div class="bars">
-        <?php $dist=[78,15,4,2,1]; for($i=0;$i<5;$i++): ?>
-        <div class="bar"><span><?= 5-$i ?></span><div class="track"><div class="fill" style="width:<?= $dist[$i] ?>%"></div></div></div>
-        <?php endfor; ?>
-      </div>
     </div>
-    <?php foreach($L['reviews'] as $r): ?>
+    <?php if(!empty($L['reviews'])): foreach($L['reviews'] as $r): ?>
     <div class="review"><div class="h"><div class="av"><?= esc(mb_substr($r[0],0,1)) ?></div>
       <div><strong><?= esc($r[0]) ?></strong> &nbsp;<?= stars_svg($r[1],$accent,13) ?></div></div>
       <p class="muted"><?= esc($r[2]) ?></p></div>
-    <?php endforeach; ?>
+    <?php endforeach; endif; ?>
   </div>
 
   <div class="section">

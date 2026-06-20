@@ -84,11 +84,12 @@ footer a{margin-left:18px}footer a:hover{color:var(--text)}
   <?php endforeach; ?>
 </div></div></section>
 
+<?php if(!empty($L['reviews'])): $q = $L['reviews'][1] ?? $L['reviews'][0]; ?>
 <section><div class="wrap quote">
-  <?php $q=$L['reviews'][1]; ?>
   <p>“<?= esc($q[2]) ?>”</p>
   <div class="who"><?= stars_svg($q[1],$accent,15) ?> &nbsp;<?= esc($q[0]) ?> · <?= esc($S['verified']) ?></div>
 </div></section>
+<?php endif; ?>
 
 <section class="cta"><div class="wrap">
   <h2><?= esc($S['get']) ?> <?= esc($L['name']) ?></h2>

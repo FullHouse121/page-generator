@@ -119,6 +119,7 @@ footer a{margin-left:18px}footer a:hover{color:var(--text)}
   </div>
 </div></section>
 
+<?php if(!empty($L['reviews'])): ?>
 <section><div class="wrap">
   <div class="shead"><h2><?= esc($S['reviews']) ?></h2><p><?= esc(number_format($L['rating'],1)) ?> / 5 · <?= esc($L['rating_count']) ?></p></div>
   <div class="reviews">
@@ -129,6 +130,7 @@ footer a{margin-left:18px}footer a:hover{color:var(--text)}
     <?php endforeach; ?>
   </div>
 </div></section>
+<?php endif; ?>
 
 <section><div class="wrap"><div class="final">
   <h2><?= esc($S['get']) ?> <?= esc($L['name']) ?></h2>

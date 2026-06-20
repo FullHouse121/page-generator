@@ -53,7 +53,7 @@ if ($action === 'preview') {
         'lang'=>v('lang','en'),'accent'=>v('accent'),
         'seo_title'=>v('seo_title'),'seo_desc'=>v('seo_desc'),'og_image'=>v('og_image'),
         'trust_badges'=>!empty($_POST['trust_badges']),'cookie_banner'=>!empty($_POST['cookie_banner']),
-        'competitor_urls'=>v('competitor_urls'),
+        'competitor_urls'=>v('competitor_urls'),'source_url'=>v('source_url'),
         'age18'=>!empty($_POST['age18']),'support_email'=>v('support_email'),'company'=>v('company'),
     ]);
     exit;
@@ -171,7 +171,7 @@ if ($action === 'generate'):
         'tracker_url'=>v('tracker_url'),'tracker_token'=>v('tracker_token'),
         'seo_title'=>v('seo_title'),'seo_desc'=>v('seo_desc'),'og_image'=>v('og_image'),
         'trust_badges'=>!empty($_POST['trust_badges']),'cookie_banner'=>!empty($_POST['cookie_banner']),
-        'competitor_urls'=>v('competitor_urls'),
+        'competitor_urls'=>v('competitor_urls'),'source_url'=>v('source_url'),
         'age18'=>!empty($_POST['age18']),'support_email'=>v('support_email'),'company'=>v('company'),
     ];
     $res = build_landing($form);
@@ -235,6 +235,7 @@ elseif ($action === 'fetch'):
 
   <form id="genForm" method="post" action="index.php">
   <input type="hidden" name="action" value="generate">
+  <input type="hidden" name="source_url" value="<?= attr($url) ?>">
 
   <div class="card">
     <h2 style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">Live preview
